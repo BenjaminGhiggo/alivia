@@ -36,12 +36,24 @@ export default function Hero() {
           </div>
           <div className="mt-14 flow-root sm:mt-14">
             <div className="m-2 flex justify-center rounded-xl md:flex lg:-m-4 lg:rounded-2xl lg:p-4">
-              <div className="flex h-80 w-full max-w-4xl items-center justify-center rounded-xl bg-gradient-to-br from-amber-100 to-purple-100 dark:from-amber-950 dark:to-purple-950">
-                <div className="text-center">
-                  <span className="text-6xl">🗳️</span>
-                  <p className="mt-4 text-lg text-muted-foreground">
-                    Tu imagen de ALIVIA aquí
-                  </p>
+              <div className="w-full max-w-4xl rounded-xl border border-border/40 bg-gradient-to-br from-amber-50 to-purple-50 p-8 dark:from-amber-950/50 dark:to-purple-950/50">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+                  {[
+                    { icon: "🔗", label: "Registro en Blockchain", detail: "Syscoin NEVM" },
+                    { icon: "🤖", label: "Verificación con IA", detail: "Tiempo real" },
+                    { icon: "🔒", label: "Cifrado E2E", detail: "Grado militar" },
+                    { icon: "📊", label: "Resultados", detail: "Instantáneos" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2 rounded-lg bg-white/60 p-4 dark:bg-white/5">
+                      <span className="text-3xl">{item.icon}</span>
+                      <span className="text-sm font-semibold text-foreground">{item.label}</span>
+                      <span className="text-xs text-muted-foreground">{item.detail}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  Powered by Syscoin &mdash; Seguridad de Bitcoin, velocidad de Ethereum
                 </div>
               </div>
             </div>

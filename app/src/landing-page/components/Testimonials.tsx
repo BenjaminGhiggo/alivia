@@ -29,7 +29,7 @@ export default function Testimonials({
 
   return (
     <div className="mx-auto mt-32 max-w-7xl sm:mt-56 sm:px-6 lg:px-8">
-      <SectionTitle title="What Our Users Say" />
+      <SectionTitle title="Lo que dicen nuestros usuarios" />
 
       <div className="relative z-10 w-full columns-1 gap-2 px-4 md:columns-2 md:gap-6 md:px-0 lg:columns-3">
         {testimonials.slice(0, itemsToShow).map((testimonial, idx) => (
@@ -45,12 +45,18 @@ export default function Testimonials({
                   href={testimonial.socialUrl}
                   className="group flex w-full items-center gap-x-3 transition-all duration-200 hover:opacity-80"
                 >
-                  <img
-                    src={testimonial.avatarSrc}
-                    loading="lazy"
-                    alt={`${testimonial.name}'s avatar`}
-                    className="ring-border/20 group-hover:ring-primary/30 h-10 w-10 shrink-0 rounded-full ring-2 transition-all duration-200"
-                  />
+                  {testimonial.avatarSrc ? (
+                    <img
+                      src={testimonial.avatarSrc}
+                      loading="lazy"
+                      alt={`Avatar de ${testimonial.name}`}
+                      className="ring-border/20 group-hover:ring-primary/30 h-10 w-10 shrink-0 rounded-full ring-2 transition-all duration-200"
+                    />
+                  ) : (
+                    <div className="ring-border/20 group-hover:ring-primary/30 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-purple-500 text-sm font-bold text-white ring-2 transition-all duration-200">
+                      {testimonial.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <CardTitle className="group-hover:text-card-foreground truncate text-sm font-semibold transition-colors duration-200">
                       {testimonial.name}

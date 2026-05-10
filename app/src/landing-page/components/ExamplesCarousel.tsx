@@ -1,6 +1,24 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "../../client/components/ui/card";
 
+const EXAMPLE_ICONS: Record<string, string> = {
+  "Elecciones Municipales": "🏛️",
+  "Votaciones Gremiales": "👥",
+  "Asambleas de Accionistas": "📊",
+  "Presupuesto Participativo": "💰",
+  "Referéndums Ciudadanos": "🗳️",
+  "Elecciones Universitarias": "🎓",
+};
+
+const EXAMPLE_COLORS = [
+  "from-amber-100 to-orange-100 dark:from-amber-950 dark:to-orange-950",
+  "from-blue-100 to-cyan-100 dark:from-blue-950 dark:to-cyan-950",
+  "from-purple-100 to-pink-100 dark:from-purple-950 dark:to-pink-950",
+  "from-green-100 to-emerald-100 dark:from-green-950 dark:to-emerald-950",
+  "from-rose-100 to-amber-100 dark:from-rose-950 dark:to-amber-950",
+  "from-indigo-100 to-violet-100 dark:from-indigo-950 dark:to-violet-950",
+];
+
 const EXAMPLES_CAROUSEL_INTERVAL = 3000;
 const EXAMPLES_CAROUSEL_SCROLL_TIMEOUT = 200;
 
@@ -109,7 +127,7 @@ const ExamplesCarousel = ({ examples }: { examples: ExampleApp[] }) => {
       className="relative left-1/2 my-16 flex w-screen -translate-x-1/2 flex-col items-center"
     >
       <h2 className="text-muted-foreground mb-6 text-center font-semibold tracking-wide">
-        Used by:
+        Casos de uso
       </h2>
       <div className="w-full max-w-full overflow-hidden">
         <div
@@ -154,11 +172,17 @@ const ExampleCard = forwardRef<HTMLDivElement, ExampleCardProps>(
           variant={isCurrent ? "default" : "faded"}
         >
           <CardContent className="h-full p-0">
-            <img
-              src={example.imageSrc}
-              alt={example.name}
-              className="aspect-video h-auto w-full object-cover object-top"
-            />
+            {example.imageSrc ? (
+              <img
+                src={example.imageSrc}
+                alt={example.name}
+                className="aspect-video h-auto w-full object-cover object-top"
+              />
+            ) : (
+              <div className={`flex aspect-video items-center justify-center bg-gradient-to-br ${EXAMPLE_COLORS[index % EXAMPLE_COLORS.length]}`}>
+                <span className="text-5xl">{EXAMPLE_ICONS[example.name] || "🗳️"}</span>
+              </div>
+            )}
             <div className="p-4">
               <p className="font-bold">{example.name}</p>
               <p className="text-muted-foreground text-xs">
