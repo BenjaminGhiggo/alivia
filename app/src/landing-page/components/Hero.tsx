@@ -1,54 +1,49 @@
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { Button } from "../../client/components/ui/button";
-import openSaasBannerDark from "../../client/static/open-saas-banner-dark.svg";
-import openSaasBannerLight from "../../client/static/open-saas-banner-light.svg";
 
 export default function Hero() {
   return (
-    <div className="relative w-full pt-14">
+    <div className="relative w-full pt-14" id="hero">
       <TopGradient />
       <BottomGradient />
       <div className="md:p-24">
         <div className="max-w-8xl mx-auto px-6 lg:px-8">
-          <div className="lg:mb-18 mx-auto max-w-3xl text-center">
+          <div className="lg:mb-18 mx-auto max-w-4xl text-center">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+              <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              Votación digital sobre Blockchain
+            </div>
             <h1 className="text-foreground text-5xl font-bold sm:text-6xl">
-              Some <span className="italic">cool</span> words about{" "}
-              <span className="text-gradient-primary">your product</span>
+              El futuro del voto digital,{" "}
+              <span className="text-gradient-primary">seguro y transparente</span>
             </h1>
             <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-              With some more exciting words about your product!
+              Plataforma de votación digital con Blockchain e Inteligencia Artificial.
+              Cada voto es inmutable, verificable y auditable en tiempo real.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button size="lg" variant="outline" asChild>
-                <WaspRouterLink to={routes.PricingPageRoute.to}>
-                  Learn More
-                </WaspRouterLink>
-              </Button>
               <Button size="lg" variant="default" asChild>
-                <WaspRouterLink to={routes.SignupRoute.to}>
-                  Get Started <span aria-hidden="true">→</span>
-                </WaspRouterLink>
+                <a href="/contact">
+                  Solicitar Demo <span aria-hidden="true">→</span>
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <a href="#how-it-works">
+                  Ver cómo funciona
+                </a>
               </Button>
             </div>
           </div>
           <div className="mt-14 flow-root sm:mt-14">
-            <div className="m-2 hidden justify-center rounded-xl md:flex lg:-m-4 lg:rounded-2xl lg:p-4">
-              <img
-                src={openSaasBannerLight}
-                alt="App screenshot"
-                width={1000}
-                height={530}
-                loading="lazy"
-                className="rounded-md shadow-2xl ring-1 ring-gray-900/10 dark:hidden"
-              />
-              <img
-                src={openSaasBannerDark}
-                alt="App screenshot"
-                width={1000}
-                height={530}
-                loading="lazy"
-                className="hidden rounded-md shadow-2xl ring-1 ring-gray-900/10 dark:block"
-              />
+            <div className="m-2 flex justify-center rounded-xl md:flex lg:-m-4 lg:rounded-2xl lg:p-4">
+              <div className="flex h-80 w-full max-w-4xl items-center justify-center rounded-xl bg-gradient-to-br from-amber-100 to-purple-100 dark:from-amber-950 dark:to-purple-950">
+                <div className="text-center">
+                  <span className="text-6xl">🗳️</span>
+                  <p className="mt-4 text-lg text-muted-foreground">
+                    Tu imagen de ALIVIA aquí
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,96 @@
+import { ArrowRight, ExternalLink, Cpu, Shield, Zap } from "lucide-react";
+import SectionTitle from "./components/SectionTitle";
+import { Card, CardContent, CardTitle, CardDescription } from "../client/components/ui/card";
+
+interface TechSpec {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+}
+
+const techSpecs: TechSpec[] = [
+  { label: "Transacciones por segundo", value: "1,000+ TPS", icon: <Zap className="h-5 w-5" /> },
+  { label: "Costo por transacción", value: "< $0.01 USD", icon: <Cpu className="h-5 w-5" /> },
+  { label: "Finality time", value: "~5 segundos", icon: <Shield className="h-5 w-5" /> },
+];
+
+const flowSteps = ["Voto", "Cifrado", "Smart Contract", "Bloque", "Verificación"];
+
+export default function BlockchainSection() {
+  return (
+    <div id="blockchain" className="mx-auto my-32 max-w-7xl px-6 lg:px-8">
+      <SectionTitle
+        title="Tecnología Blockchain"
+        description="ALIVIA está construida sobre Syscoin NEVM — la seguridad de Bitcoin con contratos inteligentes compatibles con Ethereum"
+      />
+      <div className="mt-16 grid gap-8 lg:grid-cols-2">
+        <div>
+          <h3 className="mb-6 text-2xl font-bold text-foreground">¿Por qué Syscoin?</h3>
+          <ul className="space-y-4">
+            <li className="flex gap-3">
+              <Shield className="mt-1 h-5 w-5 shrink-0 text-amber-500" />
+              <div>
+                <strong className="text-foreground">Merge-mining con Bitcoin</strong>
+                <p className="text-sm text-muted-foreground">
+                  Syscoin hereda la seguridad de la red Bitcoin, la más grande y segura del mundo.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <Zap className="mt-1 h-5 w-5 shrink-0 text-amber-500" />
+              <div>
+                <strong className="text-foreground">Bajo costo, alta velocidad</strong>
+                <p className="text-sm text-muted-foreground">
+                  Transacciones por centavos con confirmación en segundos, ideal para procesos electorales masivos.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-3">
+              <Cpu className="mt-1 h-5 w-5 shrink-0 text-amber-500" />
+              <div>
+                <strong className="text-foreground">Compatibilidad EVM</strong>
+                <p className="text-sm text-muted-foreground">
+                  Contratos inteligentes compatibles con Ethereum (NEVM) para máxima flexibilidad y herramientas existentes.
+                </p>
+              </div>
+            </li>
+          </ul>
+          <a
+            href="https://syscoin.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400"
+          >
+            Explorar Syscoin <ExternalLink className="h-4 w-4" />
+          </a>
+        </div>
+        <div>
+          <h3 className="mb-6 text-2xl font-bold text-foreground">Flujo de la votación</h3>
+          <div className="flex flex-wrap items-center gap-2">
+            {flowSteps.map((step, i) => (
+              <div key={step} className="flex items-center gap-2">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+                  {step}
+                </div>
+                {i < flowSteps.length - 1 && (
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 grid grid-cols-3 gap-4">
+            {techSpecs.map((spec) => (
+              <Card key={spec.label} variant="bento">
+                <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
+                  <div className="text-amber-500">{spec.icon}</div>
+                  <CardDescription>{spec.label}</CardDescription>
+                  <CardTitle className="text-sm">{spec.value}</CardTitle>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
