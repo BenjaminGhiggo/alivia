@@ -1,2 +1,6 @@
 node_modules/
 .wasp/
+
+# Generados por install-alivia.sh durante el deploy en VPS
+docker-compose.yml
+nginx-client.conf

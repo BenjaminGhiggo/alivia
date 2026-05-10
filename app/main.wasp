@@ -33,6 +33,10 @@ app OpenSaaS {
   // 🔐 Auth out of the box! https://wasp.sh/docs/auth/overview
   auth: {
     userEntity: User,
+    // Auto-verifica email tras el registro para que el login funcione aunque
+    // el envío real de email no esté configurado. Borra esta línea cuando
+    // tengas un sender SendGrid/SMTP verificado en producción.
+    onAfterSignup: import { onAfterSignup } from "@src/auth/hooks/onAfterSignup",
     methods: {
       // NOTE: If you decide to not use email auth, make sure to also delete the related routes and pages below.
       //   (RequestPasswordReset(Route|Page), PasswordReset(Route|Page), EmailVerification(Route|Page))
@@ -91,7 +95,7 @@ app OpenSaaS {
     // NOTE: "Dummy" provider is just for local development purposes.
     //   Make sure to check the server logs for the email confirmation url (it will not be sent to an address)!
     //   Once you are ready for production, switch to e.g. "SendGrid" or "Mailgun" providers. Check out https://docs.opensaas.sh/guides/email-sending/ .
-    provider: Dummy,
+    provider: SendGrid,
     defaultFrom: {
       name: "Open SaaS App",
       // When using a real provider, e.g. SendGrid, you must use the same email address that you configured your account to send out emails with!
