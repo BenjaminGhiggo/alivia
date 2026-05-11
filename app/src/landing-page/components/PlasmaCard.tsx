@@ -51,7 +51,7 @@ export default function PlasmaCard({
       <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${accentColor} opacity-5 transition-opacity duration-300 group-hover:opacity-20 dark:opacity-10 dark:group-hover:opacity-30`} />
 
       {/* Inner card */}
-      <div className="relative z-10 flex h-full flex-col rounded-2xl bg-card p-7">
+      <div className="relative z-10 flex h-full flex-col rounded-2xl bg-card p-4 sm:p-5 md:p-7">
         {/* Glare effect */}
         <div
           ref={glareRef}
@@ -62,12 +62,12 @@ export default function PlasmaCard({
         />
 
         {/* Icon sphere */}
-        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-muted/30 transition-transform duration-500 group-hover:scale-110 group-hover:border-amber-400/50">
+        <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-muted/30 transition-transform duration-500 group-hover:scale-110 group-hover:border-amber-400/50 sm:mb-4 sm:h-12 sm:w-12 md:mb-5 md:h-14 md:w-14">
           {icon}
         </div>
 
         {/* Title */}
-        <h3 className="mb-2 text-lg font-extrabold tracking-tight text-foreground">
+        <h3 className="mb-1 text-base font-extrabold tracking-tight text-foreground sm:mb-2 md:text-lg">
           {title}
         </h3>
 

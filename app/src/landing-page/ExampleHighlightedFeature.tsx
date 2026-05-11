@@ -22,13 +22,13 @@ export default function AIReady() {
 
 const BlockchainVisual = () => {
   return (
-    <div className="flex w-full flex-col items-center gap-4 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-purple-50 p-8 dark:border-amber-800 dark:from-amber-950 dark:to-purple-950">
+    <div className="flex w-full flex-col items-center gap-3 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-purple-50 p-4 sm:gap-4 sm:p-6 md:p-8 dark:border-amber-800 dark:from-amber-950 dark:to-purple-950">
       <CrystalIcon color="#f59e0b" size="lg"><ShieldCheck className="h-7 w-7 stroke-[var(--color-glow)]" /></CrystalIcon>
-      <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs sm:gap-2 sm:text-sm">
         {pills.map((pill, i) => (
           <span key={pill.label} className="contents">
             {i > 0 && <span className="text-muted-foreground">→</span>}
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 ${pill.color}`}>
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 sm:gap-1.5 sm:px-3 sm:py-1 ${pill.color}`}>
               {pill.icon}
               {pill.label}
             </span>

@@ -15,15 +15,15 @@ export default function Hero() {
               <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
               Votación digital sobre Blockchain
             </div>
-            <h1 className="text-foreground text-5xl font-bold sm:text-6xl">
+            <h1 className="text-foreground text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
               El futuro del voto digital,{" "}
               <span className="text-gradient-primary">seguro y transparente</span>
             </h1>
-            <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
+            <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-sm leading-7 sm:mt-6 sm:text-base md:text-lg md:leading-8">
               Plataforma de votación digital con Blockchain e Inteligencia Artificial.
               Cada voto es inmutable, verificable y auditable en tiempo real.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-x-6">
               <Button size="lg" variant="default" asChild>
                 <a href="/contact">
                   Solicitar Demo <span aria-hidden="true">→</span>
@@ -38,8 +38,8 @@ export default function Hero() {
           </div>
           <div className="mt-14 flow-root sm:mt-14">
             <div className="m-2 flex justify-center rounded-xl md:flex lg:-m-4 lg:rounded-2xl lg:p-4">
-              <div className="w-full max-w-4xl rounded-xl border border-border/40 bg-gradient-to-br from-amber-50 to-purple-50 p-8 dark:from-amber-950/50 dark:to-purple-950/50">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+              <div className="w-full max-w-4xl rounded-xl border border-border/40 bg-gradient-to-br from-amber-50 to-purple-50 p-4 sm:p-6 md:p-8 dark:from-amber-950/50 dark:to-purple-950/50">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-6">
                     {[
                     { icon: <CrystalIcon color="#f59e0b"><Link2 className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Registro en Blockchain", detail: "Syscoin NEVM" },
                     { icon: <CrystalIcon color="#a855f7"><Bot className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Verificación con IA", detail: "Tiempo real" },
@@ -53,7 +53,7 @@ export default function Hero() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground sm:mt-6 sm:text-sm">
                   <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                   Powered by Syscoin &mdash; Seguridad de Bitcoin, velocidad de Ethereum
                 </div>

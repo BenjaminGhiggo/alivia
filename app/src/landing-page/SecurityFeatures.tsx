@@ -38,12 +38,12 @@ const securityCards = [
 
 export default function SecurityFeatures() {
   return (
-    <div id="security" className="mx-auto my-32 max-w-7xl px-6 lg:px-8">
+    <div id="security" className="mx-auto my-16 max-w-7xl px-4 sm:my-24 sm:px-6 md:my-32 lg:px-8">
       <SectionTitle
         title="Seguridad de grado institucional"
         description="Múltiples capas de protección para cada etapa del proceso electoral"
       />
-      <div className="mx-auto mt-16 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto mt-8 grid max-w-5xl gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4 md:mt-16 md:gap-5 lg:grid-cols-3">
         {securityCards.map((card) => (
           <PlasmaCard
             key={card.title}

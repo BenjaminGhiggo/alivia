@@ -8,7 +8,7 @@ export default function SectionTitle({
 }) {
   const titleElement =
     typeof title === "string" ? (
-      <h3 className="text-foreground mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
+      <h3 className="text-foreground mt-2 text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
         {title}
       </h3>
     ) : (
@@ -16,7 +16,7 @@ export default function SectionTitle({
     );
   const descriptionElement =
     typeof description === "string" ? (
-      <p className="text-muted-foreground mt-4 text-lg leading-8">
+      <p className="text-muted-foreground mt-3 text-sm leading-6 sm:mt-4 sm:text-base md:text-lg md:leading-8">
         {description}
       </p>
     ) : (

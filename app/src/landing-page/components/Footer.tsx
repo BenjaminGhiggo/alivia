@@ -48,13 +48,13 @@ export default function Footer({
   };
 }) {
   return (
-    <div className="dark:bg-boxdark-2 mx-auto mt-6 max-w-7xl px-6 lg:px-8">
+    <div className="dark:bg-boxdark-2 mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:px-8">
       <footer
         aria-labelledby="footer-heading"
-        className="relative border-t border-gray-900/10 py-16 dark:border-gray-200/10"
+        className="relative border-t border-gray-900/10 py-10 sm:py-16 dark:border-gray-200/10"
       >
         <h2 id="footer-heading" className="sr-only">Footer</h2>
-        <div className="flex flex-col gap-12 md:flex-row md:justify-between">
+        <div className="flex flex-col gap-8 sm:gap-10 md:flex-row md:justify-between">
           <div className="flex flex-col gap-4">
             <span className="text-lg font-bold text-foreground">ALIVIA</span>
             <p className="max-w-xs text-sm text-muted-foreground">
@@ -78,7 +78,7 @@ export default function Footer({
               ))}
             </div>
           </div>
-          <div className="flex gap-16">
+          <div className="flex gap-8 sm:gap-12 md:gap-16">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Plataforma</h3>
               <ul role="list" className="mt-4 space-y-3">

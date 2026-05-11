@@ -27,12 +27,12 @@ const HighlightedFeature = ({
   return (
     <div
       className={cn(
-        "my-50 mx-auto flex max-w-6xl flex-col items-center justify-between gap-x-20 gap-y-10 px-8 transition-all duration-300 ease-in-out md:px-4",
+        "my-16 mx-auto flex max-w-6xl flex-col items-center justify-between gap-x-8 gap-y-6 px-4 transition-all duration-300 ease-in-out sm:my-24 sm:gap-y-8 md:my-32 md:gap-x-16 md:px-8 lg:my-50 lg:gap-x-20 lg:gap-y-10",
         direction === "row" ? "md:flex-row" : "md:flex-row-reverse",
       )}
     >
       <div className="flex-1 flex-col">
-        <h2 className="mb-2 text-4xl font-bold">{name}</h2>
+        <h2 className="mb-2 text-2xl font-bold sm:text-3xl md:text-4xl">{name}</h2>
         {typeof description === "string" ? (
           <p className="text-muted-foreground">{description}</p>
         ) : (

@@ -25,14 +25,14 @@ const flowSteps = ["Voto", "Cifrado", "Smart Contract", "Bloque", "Verificación
 
 export default function BlockchainSection() {
   return (
-    <div id="blockchain" className="mx-auto my-32 max-w-7xl px-6 lg:px-8">
+    <div id="blockchain" className="mx-auto my-16 max-w-7xl px-4 sm:my-24 sm:px-6 md:my-32 lg:px-8">
       <SectionTitle
         title="Tecnología Blockchain"
         description="ALIVIA está construida sobre Syscoin NEVM — la seguridad de Bitcoin con contratos inteligentes compatibles con Ethereum"
       />
-      <div className="mt-16 grid gap-8 lg:grid-cols-2">
+      <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 md:mt-16 lg:grid-cols-2">
         <div>
-          <h3 className="mb-6 text-2xl font-bold text-foreground">¿Por qué Syscoin?</h3>
+          <h3 className="mb-4 text-xl font-bold text-foreground sm:mb-6 sm:text-2xl">¿Por qué Syscoin?</h3>
           <ul className="space-y-4">
             <li className="flex gap-3">
               <Shield className="mt-1 h-5 w-5 shrink-0 text-amber-500" />
@@ -72,7 +72,7 @@ export default function BlockchainSection() {
           </a>
         </div>
         <div>
-          <h3 className="mb-6 text-2xl font-bold text-foreground">Flujo de la votación</h3>
+          <h3 className="mb-4 text-xl font-bold text-foreground sm:mb-6 sm:text-2xl">Flujo de la votación</h3>
           <div className="flex flex-wrap items-center gap-2">
             {flowSteps.map((step, i) => (
               <div key={step} className="flex items-center gap-2">
@@ -85,7 +85,7 @@ export default function BlockchainSection() {
               </div>
             ))}
           </div>
-          <div className="mt-8 grid grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 md:mt-8">
             {techSpecs.map((spec) => (
               <Card key={spec.label} variant="bento">
                 <CardContent className="flex flex-col items-center gap-2 p-4 text-center">
