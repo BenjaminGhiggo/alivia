@@ -1,7 +1,49 @@
+import { useState, useEffect } from "react";
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { Button } from "../../client/components/ui/button";
 import { Link2, Bot, Lock, BarChart3 } from "lucide-react";
 import CrystalIcon from "../CrystalIcon";
+
+const phrases = [
+  "seguro y transparente",
+  "rápido y accesible",
+  "auditable e inmutable",
+];
+
+function Typewriter() {
+  const [index, setIndex] = useState(0);
+  const [char, setChar] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[index];
+    const timeout = setTimeout(() => {
+      if (!deleting) {
+        if (char < current.length) {
+          setChar((c) => c + 1);
+        } else {
+          setTimeout(() => setDeleting(true), 1800);
+        }
+      } else {
+        if (char > 0) {
+          setChar((c) => c - 1);
+        } else {
+          setDeleting(false);
+          setIndex((i) => (i + 1) % phrases.length);
+        }
+      }
+    }, deleting ? 30 : 60);
+
+    return () => clearTimeout(timeout);
+  }, [index, char, deleting]);
+
+  return (
+    <span className="text-gradient-primary">
+      {phrases[index].slice(0, char)}
+      <span className="animate-pulse">|</span>
+    </span>
+  );
+}
 
 export default function Hero() {
   return (
@@ -17,7 +59,7 @@ export default function Hero() {
             </div>
             <h1 className="text-foreground text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
               El futuro del voto digital,{" "}
-              <span className="text-gradient-primary">seguro y transparente</span>
+              <Typewriter />
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-sm leading-7 sm:mt-6 sm:text-base md:text-lg md:leading-8">
               Plataforma de votación digital con Blockchain e Inteligencia Artificial.
