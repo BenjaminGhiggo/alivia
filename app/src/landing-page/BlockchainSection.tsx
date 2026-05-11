@@ -1,4 +1,5 @@
 import { ArrowRight, ExternalLink, Cpu, Shield, Zap } from "lucide-react";
+import CrystalIcon from "./CrystalIcon";
 import SectionTitle from "./components/SectionTitle";
 import { Card, CardContent, CardTitle, CardDescription } from "../client/components/ui/card";
 
@@ -8,10 +9,16 @@ interface TechSpec {
   icon: React.ReactNode;
 }
 
+const iconColors: Record<string, string> = {
+  zap: "#f59e0b",
+  cpu: "#00d2ff",
+  shield: "#a855f7",
+};
+
 const techSpecs: TechSpec[] = [
-  { label: "Transacciones por segundo", value: "1,000+ TPS", icon: <Zap className="h-5 w-5" /> },
-  { label: "Costo por transacción", value: "< $0.01 USD", icon: <Cpu className="h-5 w-5" /> },
-  { label: "Finality time", value: "~5 segundos", icon: <Shield className="h-5 w-5" /> },
+  { label: "Transacciones por segundo", value: "1,000+ TPS", icon: <CrystalIcon color={iconColors.zap} size="sm"><Zap className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon> },
+  { label: "Costo por transacción", value: "< $0.01 USD", icon: <CrystalIcon color={iconColors.cpu} size="sm"><Cpu className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon> },
+  { label: "Finality time", value: "~5 segundos", icon: <CrystalIcon color={iconColors.shield} size="sm"><Shield className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon> },
 ];
 
 const flowSteps = ["Voto", "Cifrado", "Smart Contract", "Bloque", "Verificación"];

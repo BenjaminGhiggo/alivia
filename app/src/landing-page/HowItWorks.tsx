@@ -1,4 +1,5 @@
 import { Fingerprint, Vote, Link, SearchCheck } from "lucide-react";
+import CrystalIcon from "./CrystalIcon";
 import SectionTitle from "./components/SectionTitle";
 
 interface Step {
@@ -9,22 +10,22 @@ interface Step {
 
 const steps: Step[] = [
   {
-    icon: <Fingerprint className="h-8 w-8" />,
+    icon: <CrystalIcon color="#00d2ff"><Fingerprint className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Registro",
     description: "Verificación de identidad con IA: biometría facial + documento de identidad.",
   },
   {
-    icon: <Vote className="h-8 w-8" />,
+    icon: <CrystalIcon color="#a855f7"><Vote className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Votación",
     description: "Selección de candidato u opción en una interfaz segura e intuitiva.",
   },
   {
-    icon: <Link className="h-8 w-8" />,
+    icon: <CrystalIcon color="#f59e0b"><Link className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Registro en Blockchain",
     description: "El voto cifrado se registra en Syscoin NEVM como transacción inmutable.",
   },
   {
-    icon: <SearchCheck className="h-8 w-8" />,
+    icon: <CrystalIcon color="#34d399"><SearchCheck className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Verificación",
     description: "Cualquier persona puede auditar el resultado en el explorador de bloques.",
   },
@@ -48,7 +49,7 @@ export default function HowItWorks() {
               }`}
             >
               <div className="flex-1 text-center md:text-left">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900 dark:text-amber-300">
+                <div>
                   {step.icon}
                 </div>
                 <h3 className="mt-4 text-xl font-bold text-foreground">{step.title}</h3>

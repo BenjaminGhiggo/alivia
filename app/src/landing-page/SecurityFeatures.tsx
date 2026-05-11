@@ -1,34 +1,35 @@
 import { Eye, Code2, Network, Lock, Siren } from "lucide-react";
+import CrystalIcon from "./CrystalIcon";
 import SectionTitle from "./components/SectionTitle";
 import PlasmaCard from "./components/PlasmaCard";
 
 const securityCards = [
   {
-    icon: <Eye className="h-6 w-6 stroke-cyan-400" />,
+    icon: <CrystalIcon color="#00d2ff" size="sm"><Eye className="h-5 w-5 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Zero-Knowledge Proofs",
     description: "Privacidad del voto garantizada: se verifica la validez sin revelar el contenido del voto.",
     accent: "from-cyan-400 to-blue-500",
   },
   {
-    icon: <Code2 className="h-6 w-6 stroke-purple-400" />,
+    icon: <CrystalIcon color="#a855f7" size="sm"><Code2 className="h-5 w-5 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Smart Contract Auditable",
     description: "Código abierto y auditado por terceros independientes. Transparencia total del proceso.",
     accent: "from-purple-400 to-violet-500",
   },
   {
-    icon: <Network className="h-6 w-6 stroke-amber-400" />,
+    icon: <CrystalIcon color="#f59e0b" size="sm"><Network className="h-5 w-5 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Merge-mining con Bitcoin",
     description: "La red más segura del mundo protege cada transacción de la plataforma.",
     accent: "from-amber-400 to-orange-500",
   },
   {
-    icon: <Lock className="h-6 w-6 stroke-red-400" />,
+    icon: <CrystalIcon color="#f472b6" size="sm"><Lock className="h-5 w-5 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Cifrado End-to-End",
     description: "Desde el dispositivo del votante hasta la blockchain, tu voto viaja siempre cifrado.",
     accent: "from-red-400 to-rose-500",
   },
   {
-    icon: <Siren className="h-6 w-6 stroke-emerald-400" />,
+    icon: <CrystalIcon color="#34d399" size="sm"><Siren className="h-5 w-5 stroke-[var(--color-glow)]" /></CrystalIcon>,
     title: "Resistencia a DDoS",
     description: "Infraestructura distribuida con mitigación automática de ataques de denegación de servicio.",
     accent: "from-emerald-400 to-green-500",

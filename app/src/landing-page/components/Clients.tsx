@@ -1,4 +1,5 @@
 import { Link2, Bot, Lock } from "lucide-react";
+import CrystalIcon from "../CrystalIcon";
 import { SyscoinUrl } from "../../shared/common";
 import SyscoinLogo from "../logos/SyscoinLogo";
 
@@ -18,15 +19,15 @@ export default function Clients() {
           <SyscoinLogo className="h-10 w-10" />
         </a>
         <div className="flex items-center gap-2 opacity-80">
-          <Link2 className="h-5 w-5 text-amber-500" />
+          <CrystalIcon color="#f59e0b" size="sm"><Link2 className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon>
           <span className="text-sm font-semibold text-muted-foreground">Blockchain NEVM</span>
         </div>
         <div className="flex items-center gap-2 opacity-80">
-          <Bot className="h-5 w-5 text-amber-500" />
+          <CrystalIcon color="#a855f7" size="sm"><Bot className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon>
           <span className="text-sm font-semibold text-muted-foreground">AI Verified</span>
         </div>
         <div className="flex items-center gap-2 opacity-80">
-          <Lock className="h-5 w-5 text-amber-500" />
+          <CrystalIcon color="#00d2ff" size="sm"><Lock className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon>
           <span className="text-sm font-semibold text-muted-foreground">E2E Encrypted</span>
         </div>
       </div>

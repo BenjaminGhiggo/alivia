@@ -3,6 +3,7 @@ import {
   Shield, Brain, Search, ScanFace, Smartphone,
   Lock, BarChart3, ClipboardCheck, Globe,
 } from "lucide-react";
+import CrystalIcon from "./CrystalIcon";
 import type { FAQ } from "./components/FAQ";
 
 export interface FeatureItem {
@@ -13,67 +14,79 @@ export interface FeatureItem {
   accent: string;
 }
 
+const iconColors: Record<string, string> = {
+  cyan: "#00d2ff",
+  purple: "#a855f7",
+  amber: "#f59e0b",
+  emerald: "#34d399",
+  sky: "#00d2ff",
+  red: "#f472b6",
+  violet: "#a855f7",
+  lime: "#34d399",
+  indigo: "#818cf8",
+};
+
 export const features: FeatureItem[] = [
   {
     name: "Seguridad Blockchain Antifraude",
     description: "Cada voto registrado en Syscoin (NEVM) como transacción inmutable",
-    icon: <Shield className="h-6 w-6 stroke-cyan-400" />,
+    icon: <CrystalIcon color={iconColors.cyan}><Shield className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-cyan-400 to-blue-500",
   },
   {
     name: "Verificación Inteligente con IA",
     description: "Detección de anomalías y patrones de fraude en tiempo real",
-    icon: <Brain className="h-6 w-6 stroke-purple-400" />,
+    icon: <CrystalIcon color={iconColors.purple}><Brain className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-purple-400 to-pink-500",
   },
   {
     name: "Transparencia Auditable",
     description: "Resultados verificables por cualquier ciudadano en el explorador de bloques",
-    icon: <Search className="h-6 w-6 stroke-amber-400" />,
+    icon: <CrystalIcon color={iconColors.amber}><Search className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-amber-400 to-orange-500",
   },
   {
     name: "Identidad Digital Segura",
     description: "Verificación biométrica + documento para garantizar un voto por persona",
-    icon: <ScanFace className="h-6 w-6 stroke-emerald-400" />,
+    icon: <CrystalIcon color={iconColors.emerald}><ScanFace className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-emerald-400 to-teal-500",
   },
   {
     name: "Experiencia Accesible",
     description: "Interfaz intuitiva, votación desde cualquier dispositivo en minutos",
-    icon: <Smartphone className="h-6 w-6 stroke-sky-400" />,
+    icon: <CrystalIcon color={iconColors.sky}><Smartphone className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-sky-400 to-cyan-500",
   },
   {
     name: "Cifrado de Extremo a Extremo",
     description: "Voto secreto protegido con criptografía de grado militar",
-    icon: <Lock className="h-6 w-6 stroke-red-400" />,
+    icon: <CrystalIcon color={iconColors.red}><Lock className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-red-400 to-rose-500",
   },
   {
     name: "Resultados en Tiempo Real",
     description: "Conteo automático e inmediato sin intervención humana",
-    icon: <BarChart3 className="h-6 w-6 stroke-violet-400" />,
+    icon: <CrystalIcon color={iconColors.violet}><BarChart3 className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-violet-400 to-purple-500",
   },
   {
     name: "Auditoría con IA",
     description: "Reportes automáticos de integridad post-elección",
-    icon: <ClipboardCheck className="h-6 w-6 stroke-lime-400" />,
+    icon: <CrystalIcon color={iconColors.lime}><ClipboardCheck className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-lime-400 to-green-500",
   },
   {
     name: "Escalabilidad LATAM",
     description: "Diseñado para soportar millones de votos simultáneos",
-    icon: <Globe className="h-6 w-6 stroke-indigo-400" />,
+    icon: <CrystalIcon color={iconColors.indigo}><Globe className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
     href: DocsUrl,
     accent: "from-indigo-400 to-blue-500",
   },

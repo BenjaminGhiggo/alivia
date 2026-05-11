@@ -1,4 +1,5 @@
 import { ShieldCheck, Vote, Lock, Link2, CheckCircle2 } from "lucide-react";
+import CrystalIcon from "./CrystalIcon";
 import HighlightedFeature from "./components/HighlightedFeature";
 
 const pills = [
@@ -22,7 +23,7 @@ export default function AIReady() {
 const BlockchainVisual = () => {
   return (
     <div className="flex w-full flex-col items-center gap-4 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-purple-50 p-8 dark:border-amber-800 dark:from-amber-950 dark:to-purple-950">
-      <ShieldCheck className="h-16 w-16 text-amber-500" />
+      <CrystalIcon color="#f59e0b" size="lg"><ShieldCheck className="h-7 w-7 stroke-[var(--color-glow)]" /></CrystalIcon>
       <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
         {pills.map((pill, i) => (
           <span key={pill.label} className="contents">
