@@ -6,8 +6,8 @@ import CrystalIcon from "../CrystalIcon";
 
 const phrases = [
   "seguro y transparente",
-  "rápido y accesible",
   "auditable e inmutable",
+  "confiable y verificable",
 ];
 
 function Typewriter() {

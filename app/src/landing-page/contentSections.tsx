@@ -94,46 +94,25 @@ export const features: FeatureItem[] = [
 
 export const testimonials = [
   {
-    name: "Carlos Mendoza",
-    role: "Asesor Electoral — OEA",
+    name: "Tu nombre aquí",
+    role: "Tu cargo aquí",
     avatarSrc: "",
     socialUrl: "#",
-    quote: "ALIVIA representa un salto cualitativo en transparencia electoral. Poder auditar cada voto en el explorador de bloques sin depender de una autoridad central cambia las reglas del juego.",
+    quote: "Agrega aquí el testimonio real de tu primer cliente o autoridad que valide ALIVIA.",
   },
   {
-    name: "María Fernanda López",
-    role: "Presidenta — Colegio de Abogados de Lima",
+    name: "Tu nombre aquí",
+    role: "Tu cargo aquí",
     avatarSrc: "",
     socialUrl: "#",
-    quote: "Implementamos ALIVIA para nuestra elección de junta directiva. 2,800 votos en 48 horas, cero incidentes. La verificación biométrica eliminó los votos duplicados que solíamos tener.",
+    quote: "Agrega aquí el testimonio real de tu primer cliente o autoridad que valide ALIVIA.",
   },
   {
-    name: "Dr. Ricardo Torres",
-    role: "PhD en Criptografía — Universidad de Chile",
+    name: "Tu nombre aquí",
+    role: "Tu cargo aquí",
     avatarSrc: "",
     socialUrl: "#",
-    quote: "La arquitectura de Syscoin NEVM combinada con zero-knowledge proofs ofrece lo mejor de ambos mundos: privacidad del votante y auditabilidad pública. Es técnicamente sólido.",
-  },
-  {
-    name: "Ana Lucía Gómez",
-    role: "Directora de Innovación — Gobierno de Mendoza",
-    avatarSrc: "",
-    socialUrl: "#",
-    quote: "Buscábamos una solución que nuestros ciudadanos pudieran usar desde el celular sin complicaciones. ALIVIA logró una tasa de participación del 73% en nuestro presupuesto participativo.",
-  },
-  {
-    name: "Miguel Ángel Ruiz",
-    role: "Secretario General — Sindicato de Trabajadores",
-    avatarSrc: "",
-    socialUrl: "#",
-    quote: "Nuestro gremio tiene más de 15,000 afiliados. Con ALIVIA hicimos la votación más transparente de nuestra historia. Cada afiliado pudo verificar que su voto se contó.",
-  },
-  {
-    name: "Valentina Suárez",
-    role: "Presidenta — Federación de Estudiantes UNMSM",
-    avatarSrc: "",
-    socialUrl: "#",
-    quote: "Elegir nuestra nueva directiva con ALIVIA fue increíblemente fácil. Votamos desde el celular entre clases y los resultados fueron instantáneos. Totalmente recomendable.",
+    quote: "Agrega aquí el testimonio real de tu primer cliente o autoridad que valide ALIVIA.",
   },
 ];
 
