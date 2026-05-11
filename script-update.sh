@@ -53,7 +53,16 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 5. Rebuild server Docker + force-recreate (aplica migrations automáticamente)
+# 5. Rebuild docs/blog (Astro)
+BLOG_DIR="$(dirname "$APP_DIR")/blog"
+if [ -f "$BLOG_DIR/package.json" ]; then
+    echo "📚 Rebuildeando docs/blog..."
+    cd "$BLOG_DIR"
+    npm install
+    npm run build
+fi
+
+# 6. Rebuild server Docker + force-recreate (aplica migrations automáticamente)
 echo "🐳 Recreando contenedores..."
 cd "$APP_DIR"
 sudo docker-compose up -d --build --force-recreate
@@ -81,3 +90,4 @@ echo ""
 echo "=== ✅ Actualización completada ==="
 echo "Cliente: ${PROTOCOL}://${HOST}"
 echo "API:     ${PROTOCOL}://api.${HOST}"
+echo "Docs:    ${PROTOCOL}://docs.${HOST}"

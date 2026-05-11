@@ -2,25 +2,60 @@
 title: Arquitectura
 ---
 
-ALIVIA está desplegada como un conjunto de contenedores Docker orquestados con docker-compose.
+ALIVIA sigue una arquitectura de microservicios orquestada con Docker.
 
-## Componentes
-
-- **`server`**: Servidor Node.js generado por Wasp, corre en puerto 3001. Expone la API REST y maneja autenticación, base de datos y lógica de negocio.
-- **`client`**: Cliente estático (React + Vite) servido por nginx:alpine. Se comunica con el server vía HTTP.
-- **`postgres`**: Base de datos PostgreSQL 16 con volumen persistente.
-
-## Redes
-
-- `proxynet` (external): Red compartida con el proxy nginx reverso que maneja SSL y enrutamiento por VIRTUAL_HOST.
-- `alivia-net-N` (internal): Red bridge para comunicación entre server y postgres.
-
-## Flujo de una petición
+## Diagrama general
 
 ```
-Usuario → nginx-proxy (443) → client (80) → API calls → server (3001) → postgres (5432)
+Votante → nginx-proxy (SSL) → Cliente React (SPA)
+                             → API Node.js (REST) → PostgreSQL
+                                                  → Syscoin NEVM (Blockchain)
 ```
 
-## Blockchain
+## Capa de presentación
 
-Los votos se registran en Syscoin NEVM mediante smart contracts. El server interactúa con la red Syscoin a través de su RPC. Cada transacción queda visible en el explorador de bloques para auditoría pública.
+- **React 19** con **TypeScript** y **Tailwind CSS**
+- Build estático generado con **Vite** y servido por nginx
+- Single Page Application (SPA) con enrutamiento client-side
+- Soporte completo para dark mode y diseño responsive
+
+## Capa de aplicación
+
+- **Node.js** como runtime del servidor
+- **TypeScript** para tipado estricto en toda la API
+- **Prisma ORM** para acceso seguro y tipado a la base de datos
+- API REST con autenticación JWT (email/password + OAuth)
+- Migraciones de base de datos automáticas al arranque del servidor
+
+## Capa de datos
+
+- **PostgreSQL 16** como base de datos relacional principal
+- Almacena usuarios, elecciones, configuración y metadatos de votos
+- Volumen Docker persistente para durabilidad
+- Los votos en sí se registran en la blockchain, no en la base de datos
+
+## Capa blockchain
+
+- **Syscoin NEVM** — Blockchain EVM-compatible con merge-mining de Bitcoin
+- Smart contracts en **Solidity** para registro inmutable de votos
+- Cada voto se cifra de extremo a extremo antes de registrarse como transacción
+- Costo por transacción: < $0.01 USD
+- Finality: ~5 segundos
+- Auditoría pública vía explorador de bloques de Syscoin
+
+## Seguridad
+
+| Capa | Mecanismo |
+|---|---|
+| Transporte | TLS 1.3 (Let's Encrypt wildcard) |
+| Autenticación | JWT + verificación biométrica con IA |
+| Voto | Cifrado E2E + Zero-Knowledge Proofs |
+| Blockchain | Merge-mining con Bitcoin (hashrate compartido) |
+| Infraestructura | Contenedores aislados + redes Docker bridge |
+
+## Escalabilidad
+
+- Cada instancia es independiente y se identifica por número de servicio
+- Múltiples instancias pueden coexistir en el mismo servidor
+- La blockchain de Syscoin soporta 1,000+ TPS
+- El cliente estático se puede servir desde CDN para baja latencia global
