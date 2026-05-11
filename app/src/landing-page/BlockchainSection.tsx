@@ -1,4 +1,4 @@
-import { ArrowRight, ExternalLink, Cpu, Shield, Zap } from "lucide-react";
+import { ExternalLink, Cpu, Shield, Zap, FileCheck, Lock, FileCode, Database, Search } from "lucide-react";
 import CrystalIcon from "./CrystalIcon";
 import SectionTitle from "./components/SectionTitle";
 import { Card, CardContent, CardTitle, CardDescription } from "../client/components/ui/card";
@@ -21,7 +21,13 @@ const techSpecs: TechSpec[] = [
   { label: "Finality time", value: "~5 segundos", icon: <CrystalIcon color={iconColors.shield} size="sm"><Shield className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon> },
 ];
 
-const flowSteps = ["Voto", "Cifrado", "Smart Contract", "Bloque", "Verificación"];
+const flowSteps = [
+  { label: "Voto", icon: FileCheck, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/50", border: "border-amber-200 dark:border-amber-800" },
+  { label: "Cifrado", icon: Lock, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/50", border: "border-purple-200 dark:border-purple-800" },
+  { label: "Smart Contract", icon: FileCode, color: "text-cyan-500", bg: "bg-cyan-50 dark:bg-cyan-950/50", border: "border-cyan-200 dark:border-cyan-800" },
+  { label: "Bloque", icon: Database, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/50", border: "border-emerald-200 dark:border-emerald-800" },
+  { label: "Verificación", icon: Search, color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-950/50", border: "border-rose-200 dark:border-rose-800" },
+];
 
 export default function BlockchainSection() {
   return (
@@ -73,14 +79,18 @@ export default function BlockchainSection() {
         </div>
         <div>
           <h3 className="mb-4 text-xl font-bold text-foreground sm:mb-6 sm:text-2xl">Flujo de la votación</h3>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap">
             {flowSteps.map((step, i) => (
-              <div key={step} className="flex items-center gap-2">
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
-                  {step}
+              <div key={step.label} className="flex items-center gap-3">
+                <div className={`flex items-center gap-2 rounded-xl border ${step.border} ${step.bg} px-4 py-3 transition-all duration-300 hover:scale-105 hover:shadow-md`}>
+                  <step.icon className={`h-5 w-5 ${step.color}`} />
+                  <span className={`text-sm font-semibold ${step.color}`}>{step.label}</span>
                 </div>
                 {i < flowSteps.length - 1 && (
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  <div className="hidden h-0.5 w-6 bg-gradient-to-r from-foreground/20 to-foreground/5 sm:block" />
+                )}
+                {i < flowSteps.length - 1 && (
+                  <div className="text-muted-foreground sm:hidden">↓</div>
                 )}
               </div>
             ))}

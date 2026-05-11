@@ -1,6 +1,7 @@
 import { Link2, Bot, Lock } from "lucide-react";
 import CrystalIcon from "../CrystalIcon";
 import { SyscoinUrl } from "../../shared/common";
+import AliviaLogo from "../logos/AliviaLogo";
 import SyscoinLogo from "../logos/SyscoinLogo";
 
 export default function Clients() {
@@ -10,6 +11,9 @@ export default function Clients() {
         Tecnología que respalda cada voto
       </h2>
       <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14">
+        <div className="opacity-80 transition-opacity hover:opacity-100">
+          <AliviaLogo className="h-10 w-auto" />
+        </div>
         <a
           href={SyscoinUrl}
           target="_blank"

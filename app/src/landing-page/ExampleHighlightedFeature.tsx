@@ -9,7 +9,7 @@ const pills = [
   { icon: <CheckCircle2 className="h-4 w-4" />, label: "Verificado", color: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" },
 ];
 
-export default function AIReady() {
+export default function TransparentAudit() {
   return (
     <HighlightedFeature
       name="Votación transparente y auditable"
