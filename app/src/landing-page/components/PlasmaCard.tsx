@@ -47,11 +47,11 @@ export default function PlasmaCard({
       className={`group relative overflow-hidden rounded-2xl p-[1px] transition-transform duration-300 hover:-translate-y-1 ${className}`}
     >
       {/* Animated border gradient */}
-      <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${accentColor} opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-40`} />
-      <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${accentColor} opacity-10 transition-opacity duration-300 group-hover:opacity-30`} />
+      <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${accentColor} opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-30`} />
+      <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${accentColor} opacity-5 transition-opacity duration-300 group-hover:opacity-20 dark:opacity-10 dark:group-hover:opacity-30`} />
 
       {/* Inner card */}
-      <div className="relative z-10 flex h-full flex-col rounded-2xl bg-[#0a0a0c] p-7 dark:bg-[#0a0a0c]">
+      <div className="relative z-10 flex h-full flex-col rounded-2xl bg-card p-7">
         {/* Glare effect */}
         <div
           ref={glareRef}
@@ -62,17 +62,17 @@ export default function PlasmaCard({
         />
 
         {/* Icon sphere */}
-        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-white/10 to-transparent shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] transition-transform duration-500 group-hover:scale-110 group-hover:border-cyan-400/50">
+        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-muted/30 transition-transform duration-500 group-hover:scale-110 group-hover:border-amber-400/50">
           {icon}
         </div>
 
         {/* Title */}
-        <h3 className="mb-2 bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
+        <h3 className="mb-2 text-lg font-extrabold tracking-tight text-foreground">
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-sm leading-relaxed text-slate-400">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
       </div>

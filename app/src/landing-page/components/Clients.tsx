@@ -1,3 +1,4 @@
+import { Link2, Bot, Lock } from "lucide-react";
 import { SyscoinUrl } from "../../shared/common";
 import SyscoinLogo from "../logos/SyscoinLogo";
 
@@ -17,15 +18,15 @@ export default function Clients() {
           <SyscoinLogo className="h-10 w-10" />
         </a>
         <div className="flex items-center gap-2 opacity-80">
-          <span className="text-2xl">🔗</span>
+          <Link2 className="h-5 w-5 text-amber-500" />
           <span className="text-sm font-semibold text-muted-foreground">Blockchain NEVM</span>
         </div>
         <div className="flex items-center gap-2 opacity-80">
-          <span className="text-2xl">🤖</span>
+          <Bot className="h-5 w-5 text-amber-500" />
           <span className="text-sm font-semibold text-muted-foreground">AI Verified</span>
         </div>
         <div className="flex items-center gap-2 opacity-80">
-          <span className="text-2xl">🔒</span>
+          <Lock className="h-5 w-5 text-amber-500" />
           <span className="text-sm font-semibold text-muted-foreground">E2E Encrypted</span>
         </div>
       </div>

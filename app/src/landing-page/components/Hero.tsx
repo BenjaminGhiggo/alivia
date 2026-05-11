@@ -1,5 +1,6 @@
 import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { Button } from "../../client/components/ui/button";
+import { Link2, Bot, Lock, BarChart3 } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -39,13 +40,13 @@ export default function Hero() {
               <div className="w-full max-w-4xl rounded-xl border border-border/40 bg-gradient-to-br from-amber-50 to-purple-50 p-8 dark:from-amber-950/50 dark:to-purple-950/50">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                   {[
-                    { icon: "🔗", label: "Registro en Blockchain", detail: "Syscoin NEVM" },
-                    { icon: "🤖", label: "Verificación con IA", detail: "Tiempo real" },
-                    { icon: "🔒", label: "Cifrado E2E", detail: "Grado militar" },
-                    { icon: "📊", label: "Resultados", detail: "Instantáneos" },
+                    { icon: <Link2 className="h-7 w-7" />, label: "Registro en Blockchain", detail: "Syscoin NEVM" },
+                    { icon: <Bot className="h-7 w-7" />, label: "Verificación con IA", detail: "Tiempo real" },
+                    { icon: <Lock className="h-7 w-7" />, label: "Cifrado E2E", detail: "Grado militar" },
+                    { icon: <BarChart3 className="h-7 w-7" />, label: "Resultados", detail: "Instantáneos" },
                   ].map((item, i) => (
                     <div key={i} className="flex flex-col items-center gap-2 rounded-lg bg-white/60 p-4 dark:bg-white/5">
-                      <span className="text-3xl">{item.icon}</span>
+                      <div className="text-amber-600 dark:text-amber-400">{item.icon}</div>
                       <span className="text-sm font-semibold text-foreground">{item.label}</span>
                       <span className="text-xs text-muted-foreground">{item.detail}</span>
                     </div>

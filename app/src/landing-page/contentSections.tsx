@@ -81,25 +81,25 @@ export const features: FeatureItem[] = [
 
 export const testimonials = [
   {
-    name: "Dra. María García",
-    role: "Experta en Ciberseguridad Electoral",
+    name: "Tu nombre aquí",
+    role: "Tu cargo aquí",
     avatarSrc: "",
     socialUrl: "#",
-    quote: "ALIVIA representa un salto cualitativo en transparencia electoral. La combinación de blockchain con IA para detección de anomalías es exactamente lo que el sector necesita.",
+    quote: "Agrega aquí el testimonio real de tu primer cliente o autoridad que valide ALIVIA.",
   },
   {
-    name: "Carlos Mendoza",
-    role: "Presidente Junta Vecinal",
+    name: "Tu nombre aquí",
+    role: "Tu cargo aquí",
     avatarSrc: "",
     socialUrl: "#",
-    quote: "Por primera vez pudimos auditar cada voto de nuestra asamblea vecinal. Mis vecinos confían más en el proceso porque pueden verificar los resultados ellos mismos.",
+    quote: "Agrega aquí el testimonio real de tu primer cliente o autoridad que valide ALIVIA.",
   },
   {
-    name: "Ana Lucía Torres",
-    role: "CTO @ GovTech Latam",
+    name: "Tu nombre aquí",
+    role: "Tu cargo aquí",
     avatarSrc: "",
     socialUrl: "#",
-    quote: "La arquitectura sobre Syscoin NEVM nos da la seguridad de Bitcoin con costos de transacción mínimos. Ideal para procesos electorales a gran escala en la región.",
+    quote: "Agrega aquí el testimonio real de tu primer cliente o autoridad que valide ALIVIA.",
   },
 ];
 
