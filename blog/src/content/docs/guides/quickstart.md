@@ -1,57 +1,37 @@
 ---
-title: Inicio rápido
+title: Comenzar con ALIVIA
 ---
 
-Guía para comenzar a usar ALIVIA como plataforma de votación digital.
+ALIVIA es una plataforma de votación digital que permite a organizaciones, instituciones y gobiernos realizar procesos electorales seguros, transparentes y auditables.
 
-## Requisitos del sistema
+## ¿Para quién es ALIVIA?
 
-| Componente | Requisito mínimo |
-|---|---|
-| Servidor | VPS con Ubuntu 24.04+ / 2 vCPU / 4 GB RAM |
-| Runtime | Node.js 24+ |
-| Base de datos | PostgreSQL 16 |
-| Contenedores | Docker + docker-compose v2 |
-| Dominio | Dominio propio con acceso a configuración DNS |
-| SSL | Let's Encrypt (automatizado vía DNS-01) |
+- **Gobiernos locales** que buscan modernizar sus procesos electorales
+- **Organizaciones gremiales** que necesitan elecciones internas confiables
+- **Universidades** que quieren aumentar la participación estudiantil en votaciones
+- **Empresas** que requieren asambleas de accionistas verificables
+- **Municipalidades** que implementan presupuesto participativo
 
-## Stack tecnológico
+## ¿Cómo funciona?
 
-ALIVIA utiliza las siguientes tecnologías:
+1. **Solicita una demo** — Nuestro equipo configura un entorno dedicado para tu organización
+2. **Define tu elección** — Configura candidatos, opciones, fechas y censo electoral
+3. **Los votantes participan** — Acceden desde cualquier dispositivo con verificación de identidad
+4. **Resultados auditables** — Al cierre, los resultados se computan automáticamente y cualquier persona puede verificarlos en la blockchain
 
-- **TypeScript** — Tipado estático en frontend y backend
-- **React 19** — Interfaz de usuario reactiva
-- **Vite** — Bundler de última generación para el cliente
-- **Node.js** — Runtime del servidor API
-- **Prisma** — ORM para acceso seguro a la base de datos
-- **PostgreSQL 16** — Base de datos relacional con soporte transaccional
-- **Syscoin NEVM** — Blockchain para registro inmutable de votos
-- **Docker** — Contenedores para despliegue reproducible
-- **nginx** — Proxy reverso con SSL y enrutamiento por subdominio
+## Tecnología detrás de ALIVIA
 
-## Servicios desplegados
+ALIVIA combina tecnologías de vanguardia para garantizar la integridad de cada voto:
 
-Una instalación de ALIVIA levanta los siguientes servicios:
+- **Blockchain Syscoin NEVM** — Registro inmutable de votos con merge-mining de Bitcoin
+- **Inteligencia Artificial** — Verificación biométrica y detección de anomalías en tiempo real
+- **Cifrado de extremo a extremo** — El voto viaja cifrado desde el dispositivo hasta la blockchain
+- **Zero-Knowledge Proofs** — Se verifica la validez del voto sin revelar su contenido
 
-| Servicio | Descripción | Subdominio |
-|---|---|---|
-| Cliente web | SPA React con Vite (estático) | `tudominio.com` |
-| API server | Node.js con Prisma y autenticación | `api.tudominio.com` |
-| Documentación | Astro Starlight (estático) | `docs.tudominio.com` |
-| Base de datos | PostgreSQL 16 con volumen persistente | interno |
+## Contacto
 
-## Proceso de instalación
+¿Interesado en implementar ALIVIA en tu organización?
 
-1. Configurar DNS: apuntar `tudominio.com` y `*.tudominio.com` a la IP del VPS
-2. Ejecutar el instalador automatizado en el servidor
-3. Ingresar el dominio y número de servicio
-4. El instalador configura dependencias, compila el proyecto y levanta contenedores
-5. Opcionalmente configurar SSL con Let's Encrypt (DNS-01 wildcard)
-
-## Post-instalación
-
-Tras la instalación, se requiere configurar:
-
-- **Credenciales de servicios externos** (pasarela de pagos, email, OAuth) en el archivo de variables de entorno
-- **DNS** verificar que los subdominios `api.*` y `docs.*` resuelvan correctamente
-- **Integración con Syscoin** — Configurar nodo RPC o provider para interacción con la blockchain
+- Email: [qawi.info.peru@gmail.com](mailto:qawi.info.peru@gmail.com)
+- LinkedIn: [ALIVIA.sbs](https://www.linkedin.com/company/alivia-sbs)
+- Discord: [Comunidad ALIVIA](https://discord.com/channels/1502883266208862339)

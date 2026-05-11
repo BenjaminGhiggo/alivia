@@ -2,60 +2,46 @@
 title: Arquitectura
 ---
 
-ALIVIA sigue una arquitectura de microservicios orquestada con Docker.
+ALIVIA está diseñada con una arquitectura por capas que separa la experiencia del usuario, la lógica de negocio, el almacenamiento de datos y el registro en blockchain.
 
-## Diagrama general
+## Flujo de un voto
 
 ```
-Votante → nginx-proxy (SSL) → Cliente React (SPA)
-                             → API Node.js (REST) → PostgreSQL
-                                                  → Syscoin NEVM (Blockchain)
+Votante → Verificación de identidad (IA) → Emisión del voto (cifrado E2E)
+       → Registro en Syscoin NEVM (transacción inmutable)
+       → Verificación pública (explorador de bloques)
 ```
 
-## Capa de presentación
+## Capas del sistema
 
-- **React 19** con **TypeScript** y **Tailwind CSS**
-- Build estático generado con **Vite** y servido por nginx
-- Single Page Application (SPA) con enrutamiento client-side
-- Soporte completo para dark mode y diseño responsive
+### Interfaz de usuario
+Aplicación web moderna, accesible desde cualquier dispositivo. Diseño responsive con soporte para modo oscuro, optimizada para facilitar la participación electoral.
 
-## Capa de aplicación
+### Lógica de aplicación
+API segura con autenticación JWT, verificación de identidad y gestión de elecciones. Todas las comunicaciones están protegidas con TLS 1.3.
 
-- **Node.js** como runtime del servidor
-- **TypeScript** para tipado estricto en toda la API
-- **Prisma ORM** para acceso seguro y tipado a la base de datos
-- API REST con autenticación JWT (email/password + OAuth)
-- Migraciones de base de datos automáticas al arranque del servidor
+### Almacenamiento
+Base de datos relacional para gestión de usuarios, elecciones y configuración. Los votos en sí **no se almacenan en la base de datos** — se registran directamente en la blockchain.
 
-## Capa de datos
+### Blockchain (Syscoin NEVM)
+Capa de registro inmutable. Cada voto se cifra y se registra como una transacción en Syscoin NEVM, una blockchain compatible con Ethereum que hereda la seguridad de Bitcoin mediante merge-mining.
 
-- **PostgreSQL 16** como base de datos relacional principal
-- Almacena usuarios, elecciones, configuración y metadatos de votos
-- Volumen Docker persistente para durabilidad
-- Los votos en sí se registran en la blockchain, no en la base de datos
+## Seguridad por capas
 
-## Capa blockchain
-
-- **Syscoin NEVM** — Blockchain EVM-compatible con merge-mining de Bitcoin
-- Smart contracts en **Solidity** para registro inmutable de votos
-- Cada voto se cifra de extremo a extremo antes de registrarse como transacción
-- Costo por transacción: < $0.01 USD
-- Finality: ~5 segundos
-- Auditoría pública vía explorador de bloques de Syscoin
-
-## Seguridad
-
-| Capa | Mecanismo |
+| Capa | Protección |
 |---|---|
-| Transporte | TLS 1.3 (Let's Encrypt wildcard) |
-| Autenticación | JWT + verificación biométrica con IA |
+| Identidad | Verificación biométrica con IA + documento |
+| Transporte | TLS 1.3 con certificados wildcard |
 | Voto | Cifrado E2E + Zero-Knowledge Proofs |
-| Blockchain | Merge-mining con Bitcoin (hashrate compartido) |
-| Infraestructura | Contenedores aislados + redes Docker bridge |
+| Registro | Blockchain con merge-mining de Bitcoin |
+| Auditoría | Explorador de bloques público + reportes de IA |
 
-## Escalabilidad
+## Ventajas de Syscoin NEVM
 
-- Cada instancia es independiente y se identifica por número de servicio
-- Múltiples instancias pueden coexistir en el mismo servidor
-- La blockchain de Syscoin soporta 1,000+ TPS
-- El cliente estático se puede servir desde CDN para baja latencia global
+- **Seguridad**: Hashrate compartido con Bitcoin (la red más segura del mundo)
+- **Costo**: < $0.01 USD por transacción
+- **Velocidad**: Finality en ~5 segundos
+- **Compatibilidad**: Smart contracts en Solidity (ecosistema Ethereum)
+- **Escalabilidad**: 1,000+ transacciones por segundo
+
+Más información sobre Syscoin: [syscoin.org](https://syscoin.org)
