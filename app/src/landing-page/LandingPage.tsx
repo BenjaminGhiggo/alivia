@@ -3,17 +3,14 @@ import FAQ from "./components/FAQ";
 import FeaturesGrid from "./components/FeaturesGrid";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
-import Testimonials from "./components/Testimonials";
 import {
   examples,
   faqs,
   features,
   footerNavigation,
-  testimonials,
 } from "./contentSections";
 import AIReady from "./ExampleHighlightedFeature";
 import Clients from "./components/Clients";
-import StatsSection from "./Stats";
 import HowItWorks from "./HowItWorks";
 import BlockchainSection from "./BlockchainSection";
 import SecurityFeatures from "./SecurityFeatures";
@@ -31,8 +28,6 @@ export default function LandingPage() {
         <HowItWorks />
         <BlockchainSection />
         <SecurityFeatures />
-        <StatsSection />
-        <Testimonials testimonials={testimonials} />
         <FAQ faqs={faqs} />
         <CTA />
       </main>
