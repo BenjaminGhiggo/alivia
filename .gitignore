@@ -9,4 +9,5 @@
 # Don't ignore example dotenv files.
 !.env.example
 !.env.*.example
-.recursos
+recursos/
+no-leer/
