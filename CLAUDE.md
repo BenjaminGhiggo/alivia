@@ -34,26 +34,54 @@ Postgres vive en docker-compose. **No usar `wasp start db`** (eso es de dev) en 
 - **Cliente Vite hornea la URL de API en build-time.** Se pasa por `REACT_APP_API_URL`. Cambiar de HTTP a HTTPS o de host requiere rebuild + force-recreate del cliente.
 - **Migrations corren solas al boot del server.** El `Dockerfile` generado por `wasp build` ejecuta `prisma migrate deploy` en el entrypoint. No correr `wasp db migrate-dev` en el servidor.
 
+## Documentación del proyecto
+
+`docs/` es la fuente de verdad interna (no se publica). `blog/` es lo público (se publica en `docs.<host>`).
+
+```
+docs/
+├── SOUL.md           ← constitución ética del agente (no negociables)
+├── instinct.md       ← voz operativa (cómo habla, escucha, decide)
+└── specs/            ← specs técnicas numeradas (SDD)
+    ├── 00-mvp-roadmap.md     ← índice + checklist viviente por fases
+    ├── 01-agent-behavior.md  ← reglas R1..R10 del agente
+    ├── 02-data-model.md      ← entidades del grafo (→ schema.prisma)
+    ├── 03-operations.md      ← queries/actions/jobs (→ main.wasp)
+    ├── 04-nft-contracts.md   ← NFT-Aporte / NFT-Caso en zkSYS
+    └── 05-architecture.md    ← stack, integraciones, deploy
+```
+
 ## Spec-Driven Development
 
-Todo cambio no trivial (feature nueva, refactor con efectos en API/DB, integración externa) **arranca con una spec** en `specs/<feature-slug>/`:
+Todo cambio no trivial **arranca con una spec** en `docs/specs/`. La numeración es estable: cada doc tiene un rol fijo, no se reordena. Features nuevas se agregan como `06-`, `07-`… o se reflejan dentro del doc temático correspondiente (ej. nuevo flow de bot → actualiza `01-agent-behavior.md`).
 
-- `requirements.md` — problema, alcance, criterios de aceptación.
-- `design.md` — entidades (mapean a `app/schema.prisma`), routes/pages/operations/jobs (mapean a `app/main.wasp`), side effects (email, payments, blockchain), firmas de queries/actions.
-- `tasks.md` — checklist ordenada de cambios; cada item apunta a archivo concreto.
+Cada spec contiene tres bloques:
 
-La spec se commitea **antes** de tocar código. Si la implementación diverge, se actualiza la spec en el mismo PR — la spec es fuente de verdad, no documentación post-hoc.
+- **Requirements** — problema, alcance, criterios de aceptación.
+- **Design** — entidades (→ `app/schema.prisma`), routes/pages/operations/jobs (→ `app/main.wasp`), side effects (LLM, blockchain, email).
+- **Tasks** — checklist con `[ ]` / `[x]` agrupado por fases atómicas demoables.
+
+[docs/specs/00-mvp-roadmap.md](docs/specs/00-mvp-roadmap.md) es el **checklist viviente del proyecto** — se marca con cada PR, vista global del avance.
+
+La spec se commitea antes de tocar código. Si la implementación diverge, se actualiza la spec en el mismo PR — la spec es fuente de verdad, no documentación post-hoc.
 
 ### Por qué SDD encaja con Wasp
 
-`main.wasp` ya es una spec ejecutable: lo que defines en `design.md` como rutas, operations, jobs o auth se traduce 1:1 a bloques de Wasp. `schema.prisma` cumple el mismo rol para datos. El loop queda:
+`main.wasp` ya es una spec ejecutable: lo que defines en design como rutas, operations, jobs o auth se traduce 1:1 a bloques de Wasp. `schema.prisma` cumple el mismo rol para datos. El loop queda:
 
-1. `requirements.md` → criterios de aceptación.
-2. `design.md` → bloques nuevos en `main.wasp` + entidades en `schema.prisma`.
-3. `tasks.md` → handlers TypeScript en `app/src/` (un archivo por operation, página, job).
+1. Requirements → criterios de aceptación.
+2. Design → bloques nuevos en `main.wasp` + entidades en `schema.prisma`.
+3. Tasks → handlers TypeScript en `app/src/` (un archivo por operation, página, job).
 4. `wasp build` y validar.
 
 No editar `app/.wasp/out/` — es output generado en cada build.
+
+### Reglas operativas del checklist
+
+- Cada commit referencia su task: `feat(grafo): submitReport — closes 03.F1.2`.
+- Marcar `[x]` se hace en el mismo PR que cierra la task, no en batch.
+- Cada fase tiene un "demo gate": al cerrar la fase, hay algo demoable aunque las siguientes no existan.
+- Si una task no entra en ≤2h, se rompe en sub-tasks.
 
 ## Convenciones del repo
 
