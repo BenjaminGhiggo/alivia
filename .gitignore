@@ -11,3 +11,11 @@
 !.env.*.example
 recursos/
 no-leer/
+
+# Credenciales y notas locales del equipo Alivia — NUNCA commitear
+niveles.txt
+*.secret
+*.key
+*.pem
+secrets/
+credenciales/
