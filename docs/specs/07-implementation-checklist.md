@@ -54,18 +54,18 @@ Referencia: [02-data-model.md §6](02-data-model.md).
 
 ---
 
-### F2 — Agente + Router + Tools (T4–T8) [0/8]
+### F2 — Agente + Router + Tools (T4–T8) [8/8] ✅
 
 Referencias: [01-agent-behavior](01-agent-behavior.md), [05-architecture §3.2–3.4](05-architecture.md).
 
-- [ ] **2.1** `app/src/server/agent/router.ts` — clasifica intent con `gpt-4o-mini` en `response_format: json_object`.
-- [ ] **2.2** `app/src/server/agent/alivia.ts` — agente principal con system prompt + few-shot.
-- [ ] **2.3** `app/src/server/agent/tools.ts` — 6 tools function-calling: `extract_entities`, `query_graph`, `compute_corroboration_score`, `request_user_confirmation`, `persist_case`, `mint_acta`.
-- [ ] **2.4** `app/src/server/graph/queries.ts` — consultas críticas de 02 §7.
-- [ ] **2.5** `app/src/server/graph/mutations.ts` — upsert Node/Edge/Case con dedup soft (02 §8).
-- [ ] **2.6** Persistencia del estado de la conversación por `chat_session_id`.
-- [ ] **2.7** **(demo-critical, test-first)** Unit test del cálculo `corroboration_score` (fórmula 01 §7).
-- [ ] **2.8** **(demo-critical, test-first)** Unit test del schema JSON del aporte vs `01-agent-behavior §6`.
+- [x] **2.1** `app/src/server/agent/router.ts` — `classifyIntent(llm, msg, history)` con JSON mode, fallback `fuera_alcance`.
+- [x] **2.2** `app/src/server/agent/alivia.ts` — orquestador con flows denuncia/consulta, FINALIZE_TRIGGERS, R10 confirmación. ~220 LOC cohesivo (excepción al límite 200, una sola responsabilidad orquestación).
+- [x] **2.3** `app/src/server/agent/tools.ts` — `extractEntities`, `queryGraph`, `computeCorroborationScore` (re-export), `buildConfirmationRequest`/`parseConfirmation`, `persistCase`, `hashEvidenceBundle`. `mint_acta` queda como `chain/mintActa.ts` en F4 (separación de capas).
+- [x] **2.4** `app/src/server/graph/queries.ts` — `normalizeLabel`, `findNodesByLabel`, `getDossier`, `findMatchingEntities`, `getNeighborhood`, `getRecentGraph`. Cubren 02 §7.1-7.4.
+- [x] **2.5** `app/src/server/graph/mutations.ts` — `upsertNode` (dedup soft 02 §8), `createEdge` (con dedup por sourceCaseId).
+- [x] **2.6** `app/src/server/agent/chatSession.ts` — `getOrCreateChatSession`, `updateSessionState`, `readState`. `hashExternalId` para R2 (sin PII).
+- [x] **2.7** **(demo-critical, test-first)** Unit test del cálculo `corroboration_score` (fórmula 01 §7). Implementación: `app/src/server/agent/_score.ts`. Tests: `_score.test.ts` (11 casos: límites, caps, umbral publish, umbral highlight, inputs negativos).
+- [x] **2.8** **(demo-critical, test-first)** Unit test del schema JSON del aporte vs `01-agent-behavior §6`. Implementación: `_schema.ts` (Zod). Tests: `_schema.test.ts` (11 casos: case_id regex, case_type enum, evidence types, score bounds, pseudónimo, ISO datetime, hash hex).
 
 **Demo gate:** integration test mockeado: mensaje → router → agente → tools → `Case` con status `published` y `nft_token_id = null` (pendiente F4).
 
@@ -180,7 +180,7 @@ Ver [06-demo-acceptance §11](06-demo-acceptance.md). Cada uno toma uno o más r
 ```
 F0 — Setup + Voz                      [██████████] 4/4 ✅
 F1 — Schema + Migración + Seed        [██████████] 5/5 ✅
-F2 — Agente + Router + Tools          [░░░░░░░░░░] 0/8
+F2 — Agente + Router + Tools          [██████████] 8/8 ✅
 F3 — Bots Telegram + Discord          [░░░░░░░░░░] 0/6
 F4 — Contrato + Mint                  [░░░░░░░░░░] 0/5
 F5 — Vista web                        [░░░░░░░░░░] 0/7
