@@ -45,6 +45,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vanilla-cookieconsent": "^3.0.1",
     "viem": "^2.21.0",
+    "@xyflow/react": "^12.3.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

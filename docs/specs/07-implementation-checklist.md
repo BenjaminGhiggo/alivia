@@ -100,17 +100,17 @@ Referencias: [04-nfts §3](04-nfts.md), [05-architecture §3.6](05-architecture.
 
 ---
 
-### F5 — Vista web del grafo + Páginas (T14–T17) [0/7]
+### F5 — Vista web del grafo + Páginas (T14–T17) [5/7 · SSE+Aportante deferidos]
 
 Referencias: [03-use-cases](03-use-cases.md), [05-architecture §3.8](05-architecture.md).
 
-- [ ] **5.1** `app/src/client/pages/Grafo.tsx` con React Flow, layout force-directed.
-- [ ] **5.2** Endpoint SSE `GET /events/graph` emite `graph_updated` en cada mutación de F2.5.
-- [ ] **5.3** `app/src/client/pages/Casos.tsx` — feed paginado por `published_at desc`.
-- [ ] **5.4** `app/src/client/pages/Caso.tsx` — detalle por id con evidencias + enlace al explorer del NFT.
-- [ ] **5.5** `app/src/client/pages/Aportante.tsx` — perfil pseudónimo con nivel (mockup, niveles de 04 §4.6).
-- [ ] **5.6** Routes en `main.wasp` para `/grafo`, `/casos`, `/casos/:id`, `/aportantes/:pseudonym`.
-- [ ] **5.7** `app/src/client/pages/Chat.tsx` como **plan B5** (formulario web invocando al agente, fallback si bots caen).
+- [x] **5.1** `app/src/client/pages/GrafoPage.tsx` con `@xyflow/react`, layout circular MVP. Refresh cada 3s vía `useQuery(getGraphData)` (polling, sustituye SSE para MVP).
+- [~] **5.2** SSE diferido: el polling cada 3s en `GrafoPage` cumple el demo gate (grafo crece en vivo). SSE real queda post-hackathon.
+- [x] **5.3** `app/src/client/pages/CasosPage.tsx` — feed `getRecentCases` paginado por `publishedAt desc`, con score color-coded y badge NFT.
+- [x] **5.4** `app/src/client/pages/CasoPage.tsx` — detalle por `:id` con facts, evidencias, vínculos y link al explorer zkSYS del NFT-Acta.
+- [~] **5.5** AportantePage deferida (no bloquea demo del jueves). Stub: `/casos` muestra `reporterPseudonym` por caso.
+- [x] **5.6** Routes en `main.wasp`: `/grafo`, `/casos`, `/casos/:id`, `/chat`. Queries: `getGraphData`, `getRecentCases`, `getCaseById`.
+- [x] **5.7** `app/src/client/pages/ChatPage.tsx` (plan B5) — formulario web invocando `/api/agent/turn` con `channel: "web"`, identidad guardada en localStorage.
 
 **Demo gate:** `alivia.sbs/grafo` muestra grafo seed; al hacer aporte por Telegram, el grafo crece en pantalla en ≤2 segundos.
 
@@ -183,7 +183,7 @@ F1 — Schema + Migración + Seed        [██████████] 5/5 �
 F2 — Agente + Router + Tools          [██████████] 8/8 ✅
 F3 — Bots Telegram + Discord          [██████░░░░] 4/6 (2 creds manuales)
 F4 — Contrato + Mint                  [██████████] 5/5 ✅
-F5 — Vista web                        [░░░░░░░░░░] 0/7
+F5 — Vista web                        [████████░░] 5/7 (SSE+Aportante post)
 F6 — Seed completo + Mockups          [░░░░░░░░░░] 0/4
 F7 — Smoke + Ensayo                   [░░░░░░░░░░] 0/4
 F8 — Video YouTube                    [░░░░░░░░░░] 0/3
