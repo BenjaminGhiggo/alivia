@@ -109,3 +109,27 @@ model ContactFormMessage {
   isRead                    Boolean         @default(false)
   repliedAt                 DateTime?
 }
+
+// =============================================================================
+// ALIVIA — Graph + Cases + Contributors + NFTs
+// Spec: docs/specs/02-data-model.md
+// No tocar las entidades Open SaaS de arriba (OCP): extender, no modificar.
+// =============================================================================
+
+enum NodeType {
+  PERSONA
+  CARGO
+  EMPRESA
+  CONTRATO
+  FAMILIA
+}
+
+enum EdgeType {
+  DESIGNO
+  OCUPA_CARGO
+  ES_PARIENTE_DE
+  ES_DUENO_DE
+  GANO
+  DENUNCIADO_POR
+  MENCIONADO_EN
+}

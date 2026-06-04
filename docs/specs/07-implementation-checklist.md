@@ -44,7 +44,7 @@
 
 Referencia: [02-data-model.md §6](02-data-model.md).
 
-- [ ] **1.1** Enums `NodeType` y `EdgeType` agregados a `app/schema.prisma`.
+- [x] **1.1** Enums `NodeType` y `EdgeType` agregados a `app/schema.prisma`.
 - [ ] **1.2** Modelos `Node` y `Edge` con índices.
 - [ ] **1.3** Modelos `Case`, `Contributor`, `Evidence`, `Bounty`, más `ChatSession` para estado de conversación.
 - [ ] **1.4** Migración: `wasp db migrate-dev --name "alivia-graph-init"` corre limpio.
