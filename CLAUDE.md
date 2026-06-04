@@ -114,39 +114,39 @@ const ZKSYS_POB_DEVNET = {
 
 Uso recomendado de esta red para Alivia: **testing local / interno** durante implementación F1–F3 si la testnet oficial está caída o lenta. **No usar para el demo del jueves** — el demo va contra la testnet del hackathon.
 
-### Red de Alivia · zkSYS Testnet
+### Red de Alivia · Syscoin Tanenbaum Testnet
 
-Red pública oficial de Syscoin, confirmada en el [anuncio de lanzamiento](https://syscoin.org/news/zksys-testnet-launch).
+> ⚠️ **Cambio operativo (jun 2026):** la "zkSYS Testnet" (chainId 5701) que aparece en el [anuncio de lanzamiento](https://syscoin.org/news/zksys-testnet-launch) **dejó de resolver por DNS** (`rpc-test-zk.syscoin.org` → NXDOMAIN, idem `explorer-test-zk` y `faucet-test-zk`). Sin RPC accesible, no podemos deployar ni mintear ahí.
+>
+> Alivia opera contra **Syscoin Tanenbaum Testnet** (chainId 5700), que es la testnet NEVM clásica de Syscoin y está activa y respondiendo. Cuando zkSYS Testnet vuelva, se migra cambiando los valores de `.env.server` — el código es agnóstico al chainId concreto.
 
 | Parámetro | Valor |
 | --- | --- |
-| Chain ID (decimal) | `5701` |
-| Chain ID (hex) | `0x1645` |
-| RPC URL | `https://rpc-test-zk.syscoin.org/` |
-| Explorer | `https://explorer-test-zk.syscoin.org/` |
-| Bridge | `https://bridge-test-zk.syscoin.org/` |
-| Faucet | `https://faucet-test-zk.syscoin.org/` |
-| Token nativo | `TSYS` (18 decimales) |
+| Chain ID (decimal) | `5700` |
+| Chain ID (hex) | `0x1644` |
+| RPC URL | `https://rpc.tanenbaum.io` |
+| Explorer | `https://tanenbaum.io` |
+| Token nativo | `tSYS` (18 decimales) |
 
 ```ts
-const ZKSYS_TESTNET = {
-  chainId: '0x1645',
-  chainName: 'zkSYS Testnet',
-  nativeCurrency: { name: 'TSYS', symbol: 'TSYS', decimals: 18 },
-  rpcUrls: ['https://rpc-test-zk.syscoin.org/'],
-  blockExplorerUrls: ['https://explorer-test-zk.syscoin.org/'],
+const SYSCOIN_TANENBAUM = {
+  chainId: '0x1644',
+  chainName: 'Syscoin Tanenbaum Testnet',
+  nativeCurrency: { name: 'tSYS', symbol: 'tSYS', decimals: 18 },
+  rpcUrls: ['https://rpc.tanenbaum.io'],
+  blockExplorerUrls: ['https://tanenbaum.io'],
 }
 ```
 
-#### Gotchas específicos de zkSYS Testnet
+#### Gotchas
 
-- **Arquitectura**: zkSYS es una **Validium / edgechain** powered by zkSync zkStack + Zeeve RaaS. **NO** se settle en Ethereum — anchora directo a Syscoin L1 (Bitcoin-backed). Esto cambia el modelo de gas y finality vs Tanenbaum o Rollux.
-- **Faucet vs airdrop del hackathon**: el faucet público (link arriba) reparte TSYS de testnet. Si el organizador (Fer) prometió un airdrop adicional de 10 tSYS, va por canal aparte — confirmar en Discord.
+- **Vars de entorno conservan prefijo `ZKSYS_*`** por consistencia con la spec original, aunque apuntan a Tanenbaum. Cuando zkSYS Testnet vuelva, sólo se cambia el valor, no el nombre.
+- **Faucet de Tanenbaum**: pedir en Discord oficial Syscoin (no hay faucet web público maintainido).
 - **No confundir con redes hermanas**:
-  - `Rollux Testnet` (chainId `57000`) — rollup distinto.
-  - `Syscoin Tanenbaum` (chainId `5700`) — NEVM L1 testnet.
-  - `zkSYS PoB Devnet` (chainId `57042`) — la red dev del programa Proof-of-Builders (la que usó 0xSonata).
-  - **Alivia → `5701` (zkSYS Testnet)**, no las anteriores.
+  - `Rollux Testnet` (chainId `57000`) — rollup, RPC distinto.
+  - `zkSYS PoB Devnet` (chainId `57042`) — la red dev del programa Proof-of-Builders (la que usó 0xSonata). Su RPC `rpc-pob.dev11.top` también está apagado en este momento.
+  - `zkSYS Testnet` (chainId `5701`) — la red oficial publicitada, hoy DOWN.
+  - **Alivia → `5700` (Tanenbaum)** mientras zkSYS no esté.
 
 ### Variables de entorno
 

@@ -1,7 +1,7 @@
 import { Bot, type Context } from "grammy";
 
 /**
- * @AliviaBot · Bot Telegram que reenvía mensajes al backend Wasp.
+ * @alivia_sbs_bot · Bot Telegram que reenvía mensajes al backend Wasp.
  * Spec: 05-architecture §3.1 + 03-use-cases caso 1.
  *
  * Vars de entorno:
@@ -99,7 +99,7 @@ bot.on("message:text", async (ctx) => {
   }
 });
 
-console.log(`[bot:telegram] iniciando @AliviaBot contra ${API_URL}...`);
+console.log(`[bot:telegram] iniciando @alivia_sbs_bot contra ${API_URL}...`);
 bot.start({
   onStart: (botInfo) => console.log(`[bot:telegram] conectado como @${botInfo.username}`),
 });
