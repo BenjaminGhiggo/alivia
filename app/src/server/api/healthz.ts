@@ -1,12 +1,10 @@
-import type { Request, Response } from "express";
+import type { Healthz } from "wasp/server/api";
 
 /**
  * GET /healthz
- * Smoke endpoint para 07.F3.6 / 06-demo-acceptance §5.
- * Devuelve OK si el server responde. No verifica bots ni RPC zkSYS (lo hace
- * scripts/smoke.sh por separado, F7.1).
+ * Spec: 07.F3.6 / 06-demo-acceptance §5.
  */
-export const healthz = async (_req: Request, res: Response) => {
+export const healthz: Healthz = async (_req, res, _context) => {
   res.json({
     status: "ok",
     service: "alivia-server",
