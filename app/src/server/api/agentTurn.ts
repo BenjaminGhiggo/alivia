@@ -3,6 +3,9 @@ import type { ChatSession, PrismaClient } from "@prisma/client";
 import { runAgentTurn, type AgentDeps, type AgentTurnOutput } from "../agent/alivia";
 import { getOrCreateChatSession, type Channel } from "../agent/chatSession";
 import { getLLMProvider } from "../agent/llm/factory";
+import { getMintActaService } from "../chain/mintActa";
+import { buildActaMetadata, getIpfsService } from "../chain/ipfs";
+import type { AporteCase } from "../agent/_schema";
 
 /**
  * POST /api/agent/turn
@@ -40,6 +43,42 @@ async function withLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
     locks.delete(key);
     release();
   }
+}
+
+async function mintCaseInBackground(prisma: PrismaClient, aporte: AporteCase): Promise<void> {
+  const ipfs = getIpfsService();
+  const mintSvc = getMintActaService();
+
+  const metadata = buildActaMetadata({
+    caseId: aporte.case_id,
+    caseType: aporte.case_type,
+    subjectName: aporte.subject.name,
+    evidenceHash: aporte.evidence_hash,
+    reporterPseudonym: aporte.reporter_pseudonym,
+    corroborationScore: aporte.corroboration_score,
+    createdAt: aporte.created_at,
+  });
+
+  const tokenURI = await ipfs.uploadMetadata(metadata);
+
+  // address recipient: vault address (MVP); user wallet integration → post-MVP
+  const vault = (process.env.ALIVIA_VAULT_ADDRESS ?? "0x0000000000000000000000000000000000000000") as `0x${string}`;
+
+  const result = await mintSvc.mint({
+    to: vault,
+    caseId: aporte.case_id,
+    evidenceHash: aporte.evidence_hash as `0x${string}`,
+    graphSnapshotRoot: aporte.evidence_hash as `0x${string}`,
+    aportantePseudonym: aporte.reporter_pseudonym,
+    tokenURI,
+  });
+
+  await prisma.case.update({
+    where: { id: aporte.case_id },
+    data: { nftTokenId: result.tokenId, nftTxHash: result.txHash },
+  });
+
+  console.log(`[mint] ${aporte.case_id} → token ${result.tokenId}, tx ${result.txHash}`);
 }
 
 function authorize(req: Request): boolean {
@@ -85,6 +124,13 @@ export const agentTurn = async (req: Request, res: Response, context: { entities
         history: input.history,
       }),
     );
+
+    // Fire-and-forget mint si el aporte cristalizó (no bloquea respuesta del bot)
+    if (result.caseToMint) {
+      mintCaseInBackground(prisma, result.caseToMint).catch((err) => {
+        console.error("[agentTurn] mint background error:", err);
+      });
+    }
 
     const response: AgentTurnResponse = {
       text: result.text,
