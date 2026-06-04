@@ -31,7 +31,7 @@
 
 ### F0 — Setup + Voz (T0–T2) [0/4]
 
-- [ ] **0.1** Branch `dev` al día con `main`. Workflow `SB-N-vK` activo (ver [CLAUDE.md → Flujo Git](../../CLAUDE.md)).
+- [x] **0.1** Branch `dev` al día con `main`. Workflow `SB-N-vK` activo (ver [CLAUDE.md → Flujo Git](../../CLAUDE.md)).
 - [ ] **0.2** `LICENSE` MIT en la raíz del repo. Repo público en GitHub.
 - [ ] **0.3** Verificar `docs/SOUL.md` y `docs/instinct.md` commiteados.
 - [ ] **0.4** Compilar system prompt del agente desde `instinct.md` + R1–R10 de `01-agent-behavior §8` → `app/src/server/agent/prompts/alivia-system.es.md`.
