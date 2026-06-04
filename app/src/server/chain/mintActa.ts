@@ -4,6 +4,7 @@ import {
   defineChain,
   http,
   parseAbi,
+  parseGwei,
   type Address,
   type Hash,
 } from "viem";
@@ -87,6 +88,8 @@ class RealMintActaService implements MintActaService {
         input.aportantePseudonym,
         input.tokenURI,
       ],
+      gas: 600_000n,
+      gasPrice: parseGwei("100"),
     });
 
     // Esperar el receipt + leer el ActaMinted event para sacar tokenId
