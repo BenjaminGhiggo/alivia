@@ -74,7 +74,7 @@ app OpenSaaS {
       // }
     },
     onAuthFailedRedirectTo: "/login",
-    onAuthSucceededRedirectTo: "/demo-app",
+    onAuthSucceededRedirectTo: "/admin",
   },
 
   db: {
@@ -399,7 +399,13 @@ job dailyStatsJob {
 //#endregion
 
 //#region Admin Dashboard
-route AdminRoute { path: "/admin", to: AnalyticsDashboardPage }
+route AdminRoute { path: "/admin", to: AdminHomePage }
+page AdminHomePage {
+  authRequired: true,
+  component: import AdminHomePage from "@src/client/pages/AdminHomePage"
+}
+
+route AdminAnalyticsRoute { path: "/admin/analytics", to: AnalyticsDashboardPage }
 page AnalyticsDashboardPage {
   authRequired: true,
   component: import AnalyticsDashboardPage from "@src/admin/dashboards/analytics/AnalyticsDashboardPage"

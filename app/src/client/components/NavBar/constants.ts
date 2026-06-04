@@ -4,13 +4,14 @@ import type { NavigationItem } from "./NavBar";
 
 export const marketingNavigationItems: NavigationItem[] = [
   { name: "Cómo funciona", to: "/#how-it-works" },
-  { name: "Seguridad", to: "/#security" },
-  { name: "Precios", to: routes.PricingPageRoute.to },
+  { name: "Grafo", to: "/grafo" },
+  { name: "Casos", to: "/casos" },
   { name: "Blog", to: BlogUrl },
   { name: "Docs", to: DocsUrl },
 ] as const;
 
 export const demoNavigationitems: NavigationItem[] = [
-  { name: "Dashboard", to: routes.DemoAppRoute.to },
+  { name: "Grafo", to: "/grafo" },
+  { name: "Admin", to: "/admin" },
   { name: "Docs", to: DocsUrl },
 ] as const;
