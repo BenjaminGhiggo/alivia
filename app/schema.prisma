@@ -133,3 +133,46 @@ enum EdgeType {
   DENUNCIADO_POR
   MENCIONADO_EN
 }
+
+/// Nodo polimórfico del grafo. `properties` (Json) carga los campos específicos
+/// del tipo según 02-data-model §2 (full_name+aliases para PERSONA, title+institution
+/// para CARGO, legal_name+ruc para EMPRESA, etc.).
+model Node {
+  id            String    @id @default(cuid())
+  type          NodeType
+  label         String
+  properties    Json
+  riskFlags     String[]  @default([])
+  createdAt     DateTime  @default(now())
+  createdBy     String              // pseudónimo del aportante o "system" (OSINT)
+  sourceCaseId  String?
+  evidenceHash  String?
+
+  outgoingEdges Edge[]    @relation("source")
+  incomingEdges Edge[]    @relation("target")
+  cases         Case[]              // subject_node_id reverse
+
+  @@index([type])
+  @@index([label])
+}
+
+/// Arista tipada, dirigida (source → target). 7 tipos según 02-data-model §3.
+model Edge {
+  id            String    @id @default(cuid())
+  type          EdgeType
+  sourceNodeId  String
+  targetNodeId  String
+  properties    Json                // grado_familiar, porcentaje, etc.
+  sourceCaseId  String?
+  evidenceHash  String?
+  confidence    Float     @default(0.5)
+  createdAt     DateTime  @default(now())
+  createdBy     String
+
+  source        Node      @relation("source", fields: [sourceNodeId], references: [id])
+  target        Node      @relation("target", fields: [targetNodeId], references: [id])
+
+  @@index([type])
+  @@index([sourceNodeId])
+  @@index([targetNodeId])
+}
