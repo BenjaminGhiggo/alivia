@@ -24,4 +24,3 @@ bots/discord/node_modules/
 bots/*/package-lock.json
 
 .mcp.json
-presentacion/

@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alivia · Memoria pública anti-corrupción para LatAm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* --- CORE STYLING & RESET --- */
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --bg-deep: #050508;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --transition-speed: 0.9s;
+            --easing: cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+        }
+
+        /* --- PRESENTATION ENGINE --- */
+        #presentation-viewport {
+            width: 1280px;
+            height: 720px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.8);
+            background: #000;
+        }
+
+        #slide-wrapper {
+            display: flex;
+            width: 1200%;
+            height: 100%;
+            transition: transform var(--transition-speed) var(--easing);
+        }
+
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            padding: 80px 100px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: radial-gradient(circle at center, #0d0d1f 0%, #050508 100%);
+        }
+
+        /* --- LOGO STYLES --- */
+        .logo {
+            position: absolute;
+            top: 40px;
+            left: 100px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .logo-text {
+            font-family: 'Orbitron';
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 3px;
+        }
+
+        /* --- NAVIGATION UI --- */
+        .ui-nav-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 25px;
+            border-radius: 40px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-button {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        .nav-button:disabled {
+            border-color: #444;
+            color: #444;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .slide-counter {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            color: #fff;
+            letter-spacing: 2px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* --- INTERACTIVE ROBOTIC AGENT (BIT-BOT) --- */
+        #robot-agent {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            z-index: 1000;
+            cursor: grab;
+            filter: drop-shadow(0 0 15px var(--neon-cyan));
+        }
+
+        #robot-agent:active {
+            cursor: grabbing;
+        }
+
+        #robot-speech {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: #fff;
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        #robot-speech::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #fff;
+        }
+
+        #robot-speech.active {
+            transform: translateX(-50%) scale(1);
+        }
+
+        .robot-body {
+            width: 50px;
+            height: 50px;
+            background: rgba(10, 10, 20, 0.9);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 12px;
+            position: relative;
+            animation: hover 2.5s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        .robot-face {
+            width: 35px;
+            height: 15px;
+            background: #000;
+            border-radius: 5px;
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .eye-container {
+            width: 8px;
+            height: 8px;
+            background: #111;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eye {
+            width: 6px;
+            height: 6px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-cyan);
+            position: absolute;
+            top: 1px;
+            left: 1px;
+        }
+
+        .robot-antenna {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 15px;
+            background: var(--neon-cyan);
+        }
+
+        .robot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -3px;
+            width: 8px;
+            height: 8px;
+            background: var(--neon-purple);
+            border-radius: 50%;
+            animation: pulse-glow 1s infinite alternate;
+        }
+
+        .robot-thruster {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 10px;
+            background: linear-gradient(to bottom, var(--neon-cyan), transparent);
+            border-radius: 50%;
+            opacity: 0.6;
+            filter: blur(2px);
+            animation: engine 0.2s infinite alternate;
+        }
+
+        @keyframes hover {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 2px var(--neon-purple); }
+            to { box-shadow: 0 0 12px var(--neon-purple); }
+        }
+
+        @keyframes engine {
+            from { height: 10px; opacity: 0.4; }
+            to { height: 18px; opacity: 0.8; }
+        }
+
+        /* --- TYPOGRAPHY & VISUALS --- */
+        h1 {
+            font-family: 'Orbitron';
+            font-size: 70px;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .slide-title {
+            font-family: 'Orbitron';
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: var(--neon-purple);
+            letter-spacing: 2px;
+        }
+
+        p, li {
+            font-size: 18px;
+            color: #b0b0c0;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: var(--neon-cyan);
+            font-weight: 700;
+        }
+
+        .warning {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .tile {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .image-box {
+            border: 1px solid var(--neon-cyan);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .nav-hint {
+            position: fixed;
+            bottom: 5px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .stat-box {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron';
+            font-size: 32px;
+            color: var(--neon-cyan);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            font-family: 'Orbitron';
+            font-size: 24px;
+            color: var(--neon-purple);
+            margin-bottom: 10px;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 5px;
+            color: var(--neon-cyan);
+        }
+
+        /* --- LANGUAGE TOGGLE --- */
+        .lang-toggle {
+            position: absolute;
+            top: 40px;
+            right: 100px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 100;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .lang-toggle:hover { border-color: rgba(188, 19, 254, 0.5); }
+        .lang-toggle span { font-family: 'Orbitron'; font-size: 12px; font-weight: 700; letter-spacing: 2px; transition: color 0.3s; }
+        .lang-toggle .active-lang { color: var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan); }
+        .lang-toggle .inactive-lang { color: #555; }
+        .lang-toggle .lang-sep { width: 2px; height: 14px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+    </style>
+</head>
+
+<body>
+
+    <div id="presentation-viewport">
+        <!-- Logo Alivia -->
+        <div class="logo">
+            <span class="logo-icon">◈</span>
+            <span class="logo-text">ALIVIA</span>
+        </div>
+
+        <!-- Language Toggle -->
+        <div class="lang-toggle" id="langToggle" title="Switch language">
+            <span id="langES" class="active-lang">ES</span>
+            <span class="lang-sep"></span>
+            <span id="langEN" class="inactive-lang">EN</span>
+        </div>
+
+        <!-- UI Navigation Buttons -->
+        <div class="ui-nav-panel">
+            <button class="nav-button" id="prevSlide" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+            <div class="slide-counter" id="slideCount">01 / 12</div>
+            <button class="nav-button" id="nextSlide" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <!-- Robotic Agent -->
+        <div id="robot-agent">
+            <div id="robot-speech">¡ALIVIA!</div>
+            <div class="robot-antenna"></div>
+            <div class="robot-body">
+                <div class="robot-face">
+                    <div class="eye-container">
+                        <div class="eye"></div>
+                    </div>
+                    <div class="eye-container">
+                        <div class="eye"></div>
+                    </div>
+                </div>
+                <div class="robot-thruster"></div>
+            </div>
+        </div>
+
+        <div id="slide-wrapper">
+            <!-- Slide 1: Hook Emocional -->
+            <div class="slide-container">
+                <div class="grid-bg"></div>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                    <div class="logo" style="position: static; margin-bottom: 35px; gap: 18px;">
+                        <span class="logo-icon" style="font-size: 4.5rem;">◈</span>
+                        <span class="logo-text" style="font-size: 3rem;">ALIVIA</span>
+                    </div>
+                    <h1 style="font-size: 46px; margin-bottom: 20px; text-align: center;"><span data-i18n="s1.title">¿VISTE UN CASO DE CORRUPCIÓN<br>QUE NADIE CONECTÓ?</span></h1>
+                    <div style="width: 180px; height: 4px; background: var(--neon-purple); margin: 25px auto;"></div>
+                    <p style="font-size: 22px; color: var(--neon-cyan); margin-bottom: 10px; text-align: center;"><span data-i18n="s1.sub1">Tú das la pista. Alivia conecta los puntos. La blockchain lo recuerda.</span></p>
+                    <p style="font-size: 16px; color: #888; margin-top: 18px; text-align: center;"><span data-i18n="s1.sub2">Agente IA + Grafo público + Syscoin · Memoria pública anti-corrupción para LatAm</span></p>
+                    <div style="display: flex; gap: 18px; margin-top: 30px;">
+                        <div class="tech-badge" style="font-size: 14px;">🌐 alivia.sbs</div>
+                        <div class="tech-badge" style="font-size: 14px;">💬 @alivia_sbs_bot</div>
+                    </div>
+                    <p style="margin-top: 30px; color: #555; font-size: 14px;"><span data-i18n="s1.footer">Hackathon Syscoin Builders LatAm 2026</span></p>
+                </div>
+            </div>
+
+            <!-- Slide 2: El Problema -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s2.title">01. La corrupción se sostiene en el olvido</span></h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <div class="stat-box" style="margin-bottom: 20px; border: 2px solid var(--neon-cyan);">
+                            <div class="stat-number" style="color: var(--neon-cyan); font-size: 36px;">USD 29M+</div>
+                            <div class="stat-label"><span data-i18n="s2.market">Sayari Labs · revenue 2023 · sin cobertura LatAm</span></div>
+                        </div>
+                        <div class="tile" style="margin-bottom: 15px; border-left: 4px solid #ff6b6b;">
+                            <i class="fa-solid fa-clock" style="color: #ff6b6b; margin-right: 10px;"></i>
+                            <span><span data-i18n="s2.no">Caso revienta → <span class="warning">se olvida en 7 días</span></span></span>
+                        </div>
+                        <div class="tile" style="margin-bottom: 15px; border-left: 4px solid var(--neon-cyan);">
+                            <i class="fa-solid fa-link" style="color: var(--neon-cyan); margin-right: 10px;"></i>
+                            <span><span data-i18n="s2.yes">Sellado on-chain → <span class="highlight">memoria pública inmutable</span></span></span>
+                        </div>
+                        <p style="font-size: 14px; color: #888; margin-top: 15px;"><span data-i18n="s2.source">— Transparencia Internacional · LatAm pierde 5% del PBI por corrupción cada año</span></p>
+                    </div>
+                    <div>
+                        <div class="tile" style="background: rgba(255, 107, 107, 0.05); border: 1px solid rgba(255, 107, 107, 0.2); height: 100%;">
+                            <h3 style="color: #ff6b6b; margin-bottom: 15px;"><span data-i18n="s2.pain">😰 El dolor del ciudadano</span></h3>
+                            <p style="font-size: 16px; line-height: 1.8; color: #b0b0c0;"><span data-i18n="s2.quote">"Denuncié en redes y se olvidó en 3 días. Y resulta que el mismo señalado aparece en otro caso seis meses después — pero <span class="warning">nadie conectó los puntos</span>."</span></p>
+                            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <p style="font-size: 14px;"><span data-i18n="s2.cost">📰 Notas sueltas en X/TikTok: <strong>cero permanencia</strong></span></p>
+                                <p style="font-size: 14px; margin-top: 5px;"><span data-i18n="s2.reject">🕵️ Sin cruce de datos: <strong>tramas invisibles</strong></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Cómo Funciona (5 Pasos) -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s3.title">02. Cómo funciona Alivia</span></h2>
+                <p style="margin-bottom: 20px; font-size: 18px;"><span data-i18n="s3.sub">Convierte cada pista ciudadana en un <span class="highlight">eslabón verificable</span> del grafo público</span></p>
+                <div style="display: flex; gap: 12px; align-items: stretch;">
+                    <div class="step-card" style="flex: 1; text-align: center; padding: 15px;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">💬</div>
+                        <div class="step-number" style="font-size: 14px;" data-i18n="s3.step1">Paso 1</div>
+                        <p style="font-size: 13px;"><strong data-i18n="s3.d1">Reporta</strong><br><span data-i18n="s3.d1b">Telegram / Discord / Web</span></p>
+                    </div>
+                    <div style="display: flex; align-items: center; color: var(--neon-cyan); font-size: 20px;">→</div>
+                    <div class="step-card" style="flex: 1; text-align: center; padding: 15px;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">🤖</div>
+                        <div class="step-number" style="font-size: 14px;" data-i18n="s3.step2">Paso 2</div>
+                        <p style="font-size: 13px;"><strong data-i18n="s3.d2">Entrevista</strong><br><span data-i18n="s3.d2b">El agente pregunta sin presionar</span></p>
+                    </div>
+                    <div style="display: flex; align-items: center; color: var(--neon-cyan); font-size: 20px;">→</div>
+                    <div class="step-card" style="flex: 1; text-align: center; padding: 15px;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">🧠</div>
+                        <div class="step-number" style="font-size: 14px;" data-i18n="s3.step3">Paso 3</div>
+                        <p style="font-size: 13px;"><strong data-i18n="s3.d3">Extrae</strong><br><span data-i18n="s3.d3b">Personas, cargos, empresas, vínculos</span></p>
+                    </div>
+                    <div style="display: flex; align-items: center; color: var(--neon-cyan); font-size: 20px;">→</div>
+                    <div class="step-card" style="flex: 1; text-align: center; padding: 15px;">
+                        <div style="font-size: 28px; margin-bottom: 8px;">🕸️</div>
+                        <div class="step-number" style="font-size: 14px;" data-i18n="s3.step4">Paso 4</div>
+                        <p style="font-size: 13px;"><strong data-i18n="s3.d4">Conecta</strong><br><span data-i18n="s3.d4b">Alerta si cruza con casos previos</span></p>
+                    </div>
+                    <div style="display: flex; align-items: center; color: var(--neon-cyan); font-size: 20px;">→</div>
+                    <div class="step-card" style="flex: 1; text-align: center; padding: 15px; border-color: var(--neon-cyan);">
+                        <div style="font-size: 28px; margin-bottom: 8px;">⛓️</div>
+                        <div class="step-number" style="font-size: 14px; color: var(--neon-cyan);" data-i18n="s3.step5">Paso 5</div>
+                        <p style="font-size: 13px;"><strong data-i18n="s3.d5">NFT-Acta</strong><br><span data-i18n="s3.d5b">Sello on-chain en Syscoin</span></p>
+                    </div>
+                </div>
+                <div class="tile" style="margin-top: 20px; text-align: center; border: 1px solid rgba(0, 243, 255, 0.3);">
+                    <p style="font-size: 16px;"><span data-i18n="s3.bottom">Cada caso cerrado genera un <span class="highlight">hash de evidencia con timestamp</span> en Syscoin → citable por periodistas, ONGs y fiscales</span></p>
+                </div>
+            </div>
+
+            <!-- Slide 4: Producto en Producción -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s4.title">03. Producto funcionando ✅</span></h2>
+                <p style="margin-bottom: 20px; font-size: 18px;"><span data-i18n="s4.sub">No es prototipo. <span class="highlight">Ya está en producción</span> en alivia.sbs</span></p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="tile" style="border-top: 3px solid var(--neon-cyan);">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 10px;"><span data-i18n="s4.f1t">🕸️ Grafo público vivo</span></h3>
+                        <p style="font-size: 15px;"><span data-i18n="s4.f1d">65 nodos · 14 aristas activas. Personas, cargos, empresas y contratos del ecosistema peruano: Convoca, ONPE, Contraloría, Municipalidad Lima Norte</span></p>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid var(--neon-purple);">
+                        <h3 style="color: var(--neon-purple); margin-bottom: 10px;"><span data-i18n="s4.f2t">📋 Casos publicados + NFT-Acta</span></h3>
+                        <p style="font-size: 15px;"><span data-i18n="s4.f2d">Token ID 1 ya minteado on-chain. Contrato Alivia Acta (ALV-ACTA) desplegado en Syscoin Tanenbaum Testnet</span></p>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid #00ff88;">
+                        <h3 style="color: #00ff88; margin-bottom: 10px;"><span data-i18n="s4.f3t">🗳️ Observatorio Electoral</span></h3>
+                        <p style="font-size: 15px;"><span data-i18n="s4.f3d">Verificación ciudadana de actas mesa por mesa contra dataset ONPE. Discrepancias visibles, sellado on-chain</span></p>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid #ffd700;">
+                        <h3 style="color: #ffd700; margin-bottom: 10px;"><span data-i18n="s4.f4t">📊 Monitor de Licitaciones</span></h3>
+                        <p style="font-size: 15px;"><span data-i18n="s4.f4d">Alertas automáticas con heurísticas H1–H5 sobre SEACE. Postor único, plazo corto, monto anómalo, vínculos previos</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: ¿Por qué Syscoin? -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s5.title">04. ¿Por qué Syscoin?</span></h2>
+                <p style="margin-bottom: 25px; font-size: 18px;"><span data-i18n="s5.sub">Alivia eligió <span class="highlight">Syscoin NEVM (Tanenbaum Testnet)</span> por razones estratégicas</span></p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="tile" style="border-left: 4px solid var(--neon-cyan);">
+                        <i class="fa-solid fa-coins" style="font-size: 28px; color: var(--neon-cyan); margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s5.f1t">Gas Ultra-Bajo</h3>
+                        <p><span data-i18n="s5.f1d">Mint del NFT-Acta cuesta <strong>fracciones de centavo</strong>. Sellar una denuncia ciudadana no tiene barrera económica</span></p>
+                    </div>
+                    <div class="tile" style="border-left: 4px solid var(--neon-purple);">
+                        <i class="fa-solid fa-bolt" style="font-size: 28px; color: var(--neon-purple); margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s5.f2t">Confirmación en ~5s</h3>
+                        <p><span data-i18n="s5.f2d">UX fluida en chat: el aportante <strong>recibe el hash de su NFT antes de cerrar la conversación</strong></span></p>
+                    </div>
+                    <div class="tile" style="border-left: 4px solid #ffd700;">
+                        <i class="fa-solid fa-wallet" style="font-size: 28px; color: #ffd700; margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s5.f3t">Pali Wallet</h3>
+                        <p><span data-i18n="s5.f3d">Wallet oficial del ecosistema Syscoin. Auto-switch de red, <strong>compatible con UTXO + NEVM</strong></span></p>
+                    </div>
+                    <div class="tile" style="border-left: 4px solid #00ff88;">
+                        <i class="fa-solid fa-road" style="font-size: 28px; color: #00ff88; margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s5.f4t">Path a Mainnet</h3>
+                        <p><span data-i18n="s5.f4d">Tanenbaum (5700) → <strong>Syscoin NEVM Mainnet</strong> (57). Mismos contratos, mismo viem, sin reescribir nada</span></p>
+                    </div>
+                </div>
+                <div class="tile" style="margin-top: 15px; text-align: center; background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.2);">
+                    <p style="font-size: 15px;"><span data-i18n="s5.faucet">⛓️ Contrato verificable en <strong>explorer.tanenbaum.io</strong> · merge-mined con Bitcoin</span></p>
+                </div>
+            </div>
+
+            <!-- Slide 6: Arquitectura 4 NFTs -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s6.title">05. Cuatro NFTs, cuatro funciones</span></h2>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="tile" style="display: flex; align-items: center; gap: 20px; border-left: 4px solid var(--neon-cyan); padding: 18px 25px;">
+                        <div style="min-width: 90px; text-align: center;">
+                            <div style="font-size: 32px;">📜</div>
+                            <p style="font-size: 12px; color: var(--neon-cyan); font-weight: bold;" data-i18n="s6.l1">NFT-ACTA</p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--neon-cyan); font-size: 18px;" data-i18n="s6.l1t">Memoria pública del caso</h3>
+                            <p style="font-size: 14px;"><span data-i18n="s6.l1d"><span class="highlight">mint(caseId, evidenceHash)</span> — ERC-721 locked-by-design. <strong>Token ID 1 ya minteado en Tanenbaum</strong></span></p>
+                        </div>
+                    </div>
+                    <div class="tile" style="display: flex; align-items: center; gap: 20px; border-left: 4px solid var(--neon-purple); padding: 18px 25px;">
+                        <div style="min-width: 90px; text-align: center;">
+                            <div style="font-size: 32px;">🪪</div>
+                            <p style="font-size: 12px; color: var(--neon-purple); font-weight: bold;" data-i18n="s6.l2">NFT-APORTANTE</p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--neon-purple); font-size: 18px;" data-i18n="s6.l2t">Identidad cívica soulbound</h3>
+                            <p style="font-size: 14px;"><span data-i18n="s6.l2d"><span class="highlight">ERC-5114</span> — no transferible. Niveles: Testigo → Vigilante → Investigador → Cronista → Guardiana. Reputación on-chain</span></p>
+                        </div>
+                    </div>
+                    <div class="tile" style="display: flex; align-items: center; gap: 20px; border-left: 4px solid #ffd700; padding: 18px 25px;">
+                        <div style="min-width: 90px; text-align: center;">
+                            <div style="font-size: 32px;">💰</div>
+                            <p style="font-size: 12px; color: #ffd700; font-weight: bold;" data-i18n="s6.l3">NFT-BOUNTY</p>
+                        </div>
+                        <div>
+                            <h3 style="color: #ffd700; font-size: 18px;" data-i18n="s6.l3t">Recompensa con TSYS bloqueados</h3>
+                            <p style="font-size: 14px;"><span data-i18n="s6.l3d"><span class="highlight">openBounty()</span> + <span class="highlight">claim()</span> — ONGs y ciudadanos financian investigaciones específicas. Skin in the game ciudadano</span></p>
+                        </div>
+                    </div>
+                    <div class="tile" style="display: flex; align-items: center; gap: 20px; border-left: 4px solid #00ff88; padding: 18px 25px;">
+                        <div style="min-width: 90px; text-align: center;">
+                            <div style="font-size: 32px;">🔑</div>
+                            <p style="font-size: 12px; color: #00ff88; font-weight: bold;" data-i18n="s6.l4">NFT-LLAVE</p>
+                        </div>
+                        <div>
+                            <h3 style="color: #00ff88; font-size: 18px;" data-i18n="s6.l4t">Suscripción B2B compliance</h3>
+                            <p style="font-size: 14px;"><span data-i18n="s6.l4d"><span class="highlight">expiresAt</span> verificado on-chain — bancos, due diligence y medios premium pagan suscripción anual como NFT</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Lo que nos Diferencia -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s7.title">06. Lo que nos diferencia</span></h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="tile" style="border-top: 3px solid var(--neon-cyan);">
+                        <i class="fa-solid fa-scale-balanced" style="font-size: 28px; color: var(--neon-cyan); margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s7.f1t">Cero veredictos</h3>
+                        <p><span data-i18n="s7.f1d">Score de corroboración 0–1, no juicios. <strong>"Señalado", "vinculado"</strong> — nunca "corrupto". Regla R6 inviolable</span></p>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid var(--neon-purple);">
+                        <i class="fa-solid fa-user-secret" style="font-size: 28px; color: var(--neon-purple); margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s7.f2t">Anonimato seudónimo</h3>
+                        <p><span data-i18n="s7.f2d">Cero PII. El aportante va como <strong>aportante-XXXX</strong>. Sin nombre real, sin email, sin teléfono. Regla R2</span></p>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid #ffd700;">
+                        <i class="fa-solid fa-network-wired" style="font-size: 28px; color: #ffd700; margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s7.f3t">Grafo que crece solo</h3>
+                        <p><span data-i18n="s7.f3d">Network effect real. Cada aporte hace el grafo <strong>más valioso para los próximos</strong>. Moat orgánico</span></p>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid #00ff88;">
+                        <i class="fa-solid fa-globe-americas" style="font-size: 28px; color: #00ff88; margin-bottom: 12px;"></i>
+                        <h3 data-i18n="s7.f4t">Cobertura LatAm</h3>
+                        <p><span data-i18n="s7.f4d">Inteligencia ciudadana donde <strong>Sayari y OpenCorporates no llegan</strong>. Diseñada desde la región para la región</span></p>
+                    </div>
+                </div>
+                <div class="tile" style="margin-top: 15px; text-align: center; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                    <div><span style="font-size: 20px;">💬</span> <span style="font-size: 14px;">Telegram</span></div>
+                    <div><span style="font-size: 20px;">🎮</span> <span style="font-size: 14px;">Discord</span></div>
+                    <div><span style="font-size: 20px;">🌐</span> <span style="font-size: 14px;">Web</span></div>
+                    <div><span style="font-size: 20px;">📊</span> <span style="font-size: 14px;">Instagram</span></div>
+                    <div><span style="font-size: 20px;">🐦</span> <span style="font-size: 14px;">X</span></div>
+                    <div><span style="font-size: 20px;">🎵</span> <span style="font-size: 14px;">TikTok</span></div>
+                </div>
+            </div>
+
+            <!-- Slide 8: Modelo de Negocio + Precios -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s8.title">07. Modelo de negocio · precios</span></h2>
+                <p style="margin-bottom: 18px; font-size: 16px;"><span data-i18n="s8.sub"><strong>Free</strong> para ciudadanos, periodistas y ONGs. <strong>Pagado</strong> para compliance, banca y due diligence. Comparable: <span class="highlight">Sayari Labs · USD 29M/año (2023)</span></span></p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div class="tile" style="border-top: 3px solid var(--neon-cyan); padding: 18px;">
+                        <p style="font-size: 11px; color: var(--neon-cyan); font-weight: bold; letter-spacing: 2px;" data-i18n="s8.t1tag">🔑 NFT-LLAVE · LECTURA</p>
+                        <h3 style="color: #fff; font-size: 22px; margin: 8px 0 6px 0;"><span data-i18n="s8.t1price">USD 3,000</span><span style="font-size: 13px; color: #888;" data-i18n="s8.t1per"> /año</span></h3>
+                        <p style="font-size: 12px; color: #888; margin-bottom: 10px;" data-i18n="s8.t1who">Periodistas premium · ONGs medianas</p>
+                        <ul style="padding-left: 16px; font-size: 12px; line-height: 1.7; color: #b0b0c0;">
+                            <li><span data-i18n="s8.t1f1">API read-only</span></li>
+                            <li><span data-i18n="s8.t1f2">10k queries/mes</span></li>
+                            <li><span data-i18n="s8.t1f3">Export CSV/JSON</span></li>
+                            <li><span data-i18n="s8.t1f4">1 seat</span></li>
+                        </ul>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid var(--neon-purple); padding: 18px; background: rgba(188, 19, 254, 0.05); position: relative;">
+                        <div style="position: absolute; top: -10px; right: 15px; background: var(--neon-purple); color: #000; font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 10px; font-family: 'Orbitron';" data-i18n="s8.t2pop">POPULAR</div>
+                        <p style="font-size: 11px; color: var(--neon-purple); font-weight: bold; letter-spacing: 2px;" data-i18n="s8.t2tag">🔑 NFT-LLAVE · INVESTIGADOR</p>
+                        <h3 style="color: #fff; font-size: 22px; margin: 8px 0 6px 0;"><span data-i18n="s8.t2price">USD 8,000</span><span style="font-size: 13px; color: #888;" data-i18n="s8.t2per"> /año</span></h3>
+                        <p style="font-size: 12px; color: #888; margin-bottom: 10px;" data-i18n="s8.t2who">Due diligence · medios · firmas legales</p>
+                        <ul style="padding-left: 16px; font-size: 12px; line-height: 1.7; color: #b0b0c0;">
+                            <li><span data-i18n="s8.t2f1">Todo lo de Lectura</span></li>
+                            <li><span data-i18n="s8.t2f2">Alertas tiempo real</span></li>
+                            <li><span data-i18n="s8.t2f3">Dashboard avanzado</span></li>
+                            <li><span data-i18n="s8.t2f4">3 seats · webhooks</span></li>
+                        </ul>
+                    </div>
+                    <div class="tile" style="border-top: 3px solid #ffd700; padding: 18px;">
+                        <p style="font-size: 11px; color: #ffd700; font-weight: bold; letter-spacing: 2px;" data-i18n="s8.t3tag">🔑 NFT-LLAVE · ENTERPRISE</p>
+                        <h3 style="color: #fff; font-size: 22px; margin: 8px 0 6px 0;"><span data-i18n="s8.t3price">USD 15K+</span><span style="font-size: 13px; color: #888;" data-i18n="s8.t3per"> /año</span></h3>
+                        <p style="font-size: 12px; color: #888; margin-bottom: 10px;" data-i18n="s8.t3who">Bancos · compliance · gobierno honesto</p>
+                        <ul style="padding-left: 16px; font-size: 12px; line-height: 1.7; color: #b0b0c0;">
+                            <li><span data-i18n="s8.t3f1">Todo lo de Investigador</span></li>
+                            <li><span data-i18n="s8.t3f2">Grafo histórico</span></li>
+                            <li><span data-i18n="s8.t3f3">Seats ilimitados</span></li>
+                            <li><span data-i18n="s8.t3f4">Soporte dedicado · SLA</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px;">
+                    <div class="tile" style="border-left: 4px solid #00ff88; padding: 14px 18px;">
+                        <h3 style="color: #00ff88; font-size: 14px; margin-bottom: 6px;"><span data-i18n="s8.free">🆓 Free tier · alimenta el grafo</span></h3>
+                        <p style="font-size: 13px; color: #b0b0c0;"><span data-i18n="s8.freed">Ciudadanos, periodistas independientes, ONGs anti-corrupción y académicos · acceso al grafo sin login · queries en lenguaje natural · sin tope</span></p>
+                    </div>
+                    <div class="tile" style="border-left: 4px solid #ff6b6b; padding: 14px 18px;">
+                        <h3 style="color: #ff6b6b; font-size: 14px; margin-bottom: 6px;"><span data-i18n="s8.fees">⛓️ Fees on-chain (Syscoin)</span></h3>
+                        <p style="font-size: 13px; color: #b0b0c0;"><span data-i18n="s8.feesd">NFT-Aporte: <strong>1 TSYS</strong> · NFT-Caso: <strong>10 TSYS</strong> · Bounty mint: <strong>2% del pool</strong></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: User Stories -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s9.title">08. Historias de ciudadanos</span></h2>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="tile" style="display: flex; gap: 20px; align-items: center;">
+                        <div style="min-width: 60px; text-align: center;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #ec4899, #8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 24px;">🧑</div>
+                            <p style="font-size: 12px; color: var(--neon-cyan); margin-top: 5px; font-weight: bold;">Juan, 32</p>
+                        </div>
+                        <div>
+                            <p style="color: #ff6b6b; font-size: 14px; margin-bottom: 5px;"><strong><span data-i18n="s9.j.q">"El alcalde nombró a su primo y nadie va a hacer nada"</span></strong></p>
+                            <p style="font-size: 14px;"><span data-i18n="s9.j.a"><span style="color: var(--neon-purple); font-weight: bold;">Con Alivia:</span> Reporta por Telegram, Alivia entrevista en 3 minutos, mintea NFT-Acta. El caso queda <strong>citable en blockchain</strong> para siempre</span></p>
+                        </div>
+                    </div>
+                    <div class="tile" style="display: flex; gap: 20px; align-items: center;">
+                        <div style="min-width: 60px; text-align: center;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 24px;">👩‍💻</div>
+                            <p style="font-size: 12px; color: var(--neon-purple); margin-top: 5px; font-weight: bold;">Ana, 28</p>
+                        </div>
+                        <div>
+                            <p style="color: #ff6b6b; font-size: 14px; margin-bottom: 5px;"><strong><span data-i18n="s9.v.q">"Tengo 3 casos investigados pero no logro cruzarlos sola"</span></strong></p>
+                            <p style="font-size: 14px;"><span data-i18n="s9.v.a"><span style="color: var(--neon-purple); font-weight: bold;">Con Alivia:</span> Pregunta por Discord "¿quién es Juan Pérez?". El grafo devuelve el dossier completo con <strong>vínculos, contratos y aportes ciudadanos</strong></span></p>
+                        </div>
+                    </div>
+                    <div class="tile" style="display: flex; gap: 20px; align-items: center;">
+                        <div style="min-width: 60px; text-align: center;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #10b981, #14b8a6); display: flex; align-items: center; justify-content: center; font-size: 24px;">🏛️</div>
+                            <p style="font-size: 12px; color: #00ff88; margin-top: 5px; font-weight: bold;">Proética / ONG</p>
+                        </div>
+                        <div>
+                            <p style="color: #ff6b6b; font-size: 14px; margin-bottom: 5px;"><strong><span data-i18n="s9.c.q">"Necesitamos evidencia específica de una licitación dudosa"</span></strong></p>
+                            <p style="font-size: 14px;"><span data-i18n="s9.c.a"><span style="color: var(--neon-purple); font-weight: bold;">Con NFT-Bounty:</span> Bloquea 250 TSYS, define los criterios. Cuando un aportante entrega la evidencia válida, <strong>reclama la recompensa automáticamente</strong></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Roadmap + Tracción -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s10.title">09. Roadmap y tracción</span></h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="tile" style="border-top: 4px solid #00ff88;">
+                        <h3 style="color: #00ff88; margin-bottom: 12px; font-size: 16px;"><span data-i18n="s10.q1">✅ JUN 2026 — HOY</span></h3>
+                        <ul style="padding-left: 15px; font-size: 14px; line-height: 1.8;">
+                            <li>Plataforma en producción</li>
+                            <li>Grafo de 65 nodos</li>
+                            <li>Token ID 1 minteado</li>
+                            <li>Contrato Alivia Acta verificado</li>
+                            <li>Bot Telegram + Web</li>
+                            <li>Docs públicos + Whitepaper</li>
+                        </ul>
+                    </div>
+                    <div class="tile" style="border-top: 4px solid var(--neon-cyan);">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 12px; font-size: 16px;"><span data-i18n="s10.q2">📍 Q3 2026</span></h3>
+                        <ul style="padding-left: 15px; font-size: 14px; line-height: 1.8;">
+                            <li>NFT-Aportante soulbound</li>
+                            <li>NFT-Bounty con TSYS reales</li>
+                            <li>Dataset OSINT ampliado</li>
+                            <li>Partner ancla: Proética / Convoca</li>
+                        </ul>
+                    </div>
+                    <div class="tile" style="border-top: 4px solid var(--neon-purple);">
+                        <h3 style="color: var(--neon-purple); margin-bottom: 12px; font-size: 16px;"><span data-i18n="s10.q3">🔮 Q4 2026 — 2027</span></h3>
+                        <ul style="padding-left: 15px; font-size: 14px; line-height: 1.8;">
+                            <li><strong>Syscoin Mainnet</strong></li>
+                            <li>API B2B beta · NFT-Llave</li>
+                            <li>Primer cliente compliance</li>
+                            <li>Federación: Colombia · Argentina</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tile" style="text-align: center; background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2);">
+                    <p style="font-size: 16px;"><span data-i18n="s10.done">⚡ <strong>Plataforma viva en producción</strong> · NFT on-chain real · <span class="highlight">alivia.sbs</span></span></p>
+                </div>
+            </div>
+
+            <!-- Slide 11: Pruébalo -->
+            <div class="slide-container">
+                <h2 class="slide-title"><span data-i18n="s11.title">10. Pruébalo ahora mismo</span></h2>
+                <div style="text-align: center;">
+                    <p style="font-size: 22px; margin-bottom: 30px;"><span data-i18n="s11.sub">Es <span class="highlight">público y gratuito</span>. Nada de logins ni billeteras.</span></p>
+                    <div style="display: flex; justify-content: center; gap: 25px; margin-bottom: 30px;">
+                        <div class="stat-box" style="width: 180px;">
+                            <i class="fa-solid fa-globe" style="font-size: 30px; color: var(--neon-cyan); margin-bottom: 10px;"></i>
+                            <div style="font-size: 14px; font-weight: bold; color: #fff;" data-i18n="s11.s1">1. Visita</div>
+                            <div class="stat-label">alivia.sbs</div>
+                        </div>
+                        <div class="stat-box" style="width: 180px;">
+                            <i class="fa-brands fa-telegram" style="font-size: 30px; color: var(--neon-purple); margin-bottom: 10px;"></i>
+                            <div style="font-size: 14px; font-weight: bold; color: #fff;" data-i18n="s11.s2">2. Habla</div>
+                            <div class="stat-label">@alivia_sbs_bot</div>
+                        </div>
+                        <div class="stat-box" style="width: 180px;">
+                            <i class="fa-solid fa-diagram-project" style="font-size: 30px; color: #00ff88; margin-bottom: 10px;"></i>
+                            <div style="font-size: 14px; font-weight: bold; color: #fff;" data-i18n="s11.s3">3. Explora</div>
+                            <div class="stat-label" data-i18n="s11.s3l">El grafo público</div>
+                        </div>
+                        <div class="stat-box" style="width: 180px;">
+                            <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 30px; color: #ffd700; margin-bottom: 10px;"></i>
+                            <div style="font-size: 14px; font-weight: bold; color: #fff;" data-i18n="s11.s4">4. Verifica</div>
+                            <div class="stat-label" data-i18n="s11.s4l">El NFT-Acta on-chain</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                        <div class="tech-badge"><i class="fa-brands fa-github" style="margin-right: 8px;"></i>github.com/BenjaminGhiggo/alivia</div>
+                        <div class="tech-badge"><i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i>explorer.tanenbaum.io</div>
+                        <div class="tech-badge"><i class="fa-solid fa-book" style="margin-right: 8px;"></i>docs.alivia.sbs</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 12: Cierre + CTA Voto -->
+            <div class="slide-container">
+                <div class="grid-bg"></div>
+                <div style="text-align: center;">
+                    <div class="logo" style="position: static; margin-bottom: 30px;">
+                        <span class="logo-icon" style="font-size: 4rem;">◈</span>
+                        <span class="logo-text" style="font-size: 2.5rem;">ALIVIA</span>
+                    </div>
+                    <h1 style="font-size: 42px;"><span data-i18n="s12.title">LA CORRUPCIÓN SE SOSTIENE<br><span style="color: var(--neon-purple);">EN EL OLVIDO</span></span></h1>
+                    <p style="font-size: 18px; color: #b0b0c0; margin-top: 15px; font-style: italic;"><span data-i18n="s12.sub0">Alivia es lo contrario del olvido.</span></p>
+                    <div style="width: 200px; height: 4px; background: linear-gradient(to right, var(--neon-cyan), var(--neon-purple)); margin: 25px auto;"></div>
+                    <p style="color: var(--neon-cyan); font-size: 22px; margin-bottom: 10px;"><span data-i18n="s12.cta">Vota por Alivia 🗳️</span></p>
+                    <p style="color: #b0b0c0; font-size: 16px;"><span data-i18n="s12.sub">Ayúdanos a darle memoria pública a LatAm</span></p>
+                    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <div class="tech-badge" style="font-size: 16px;">🌐 alivia.sbs</div>
+                        <div class="tech-badge" style="font-size: 16px;">🐙 GitHub MIT</div>
+                        <div class="tech-badge" style="font-size: 16px;">🐦 @Aliviasbs</div>
+                    </div>
+                    <p style="color: #555; margin-top: 25px; font-size: 13px;"><span data-i18n="s12.footer">Hackathon Syscoin Builders LatAm 2026 · $SYS es el camino 🚀</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-hint"><span data-i18n="nav.hint">Flechas ← → | Arrastra al ROBOT</span></div>
+
+    <script>
+        const viewport = document.getElementById('presentation-viewport');
+        const wrapper = document.getElementById('slide-wrapper');
+        const robot = document.getElementById('robot-agent');
+        const eyes = document.querySelectorAll('.eye');
+        const speech = document.getElementById('robot-speech');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+        const slideCount = document.getElementById('slideCount');
+
+        let currentSlide = 0;
+        const totalSlides = 12;
+
+        const robotPositions = [
+            { bottom: '50px', right: '50px', color: '#00f3ff' },
+            { bottom: '50px', left: '50px', color: '#bc13fe' },
+            { top: '50px', right: '50px', color: '#00f3ff' },
+            { bottom: '300px', right: '100px', color: '#bc13fe' },
+            { top: '40%', left: '80%', color: '#00f3ff' },
+            { bottom: '150px', right: '50px', color: '#bc13fe' },
+            { top: '100px', left: '100px', color: '#00f3ff' },
+            { bottom: '50px', left: '500px', color: '#bc13fe' },
+            { top: '50px', left: '50px', color: '#00f3ff' },
+            { bottom: '200px', right: '50px', color: '#bc13fe' },
+            { top: '50%', left: '10%', color: '#00f3ff' },
+            { bottom: '50px', right: '150px', color: '#bc13fe' }
+        ];
+
+        let hasMovedManually = false;
+
+        function updatePresentation() {
+            wrapper.style.transform = `translateX(-${currentSlide * (100 / totalSlides)}%)`;
+            slideCount.innerText = `${(currentSlide + 1).toString().padStart(2, '0')} / ${totalSlides}`;
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            if (!hasMovedManually) {
+                const pos = robotPositions[currentSlide];
+                robot.style.transition = "all 1s cubic-bezier(0.19, 1, 0.22, 1)";
+                robot.style.top = pos.top || 'auto';
+                robot.style.bottom = pos.bottom || 'auto';
+                robot.style.left = pos.left || 'auto';
+                robot.style.right = pos.right || 'auto';
+
+                const robotBody = robot.querySelector('.robot-body');
+                robotBody.style.borderColor = pos.color;
+                robotBody.style.boxShadow = `0 0 20px ${pos.color}`;
+            }
+        }
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentSlide > 0) { currentSlide--; updatePresentation(); }
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentSlide < totalSlides - 1) { currentSlide++; updatePresentation(); }
+        });
+
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+
+        robot.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            hasMovedManually = true;
+            robot.style.transition = "none";
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = robot.getBoundingClientRect();
+            const viewRect = viewport.getBoundingClientRect();
+            initialX = rect.left - viewRect.left;
+            initialY = rect.top - viewRect.top;
+            e.stopPropagation();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            eyes.forEach(eye => {
+                const rect = eye.parentElement.getBoundingClientRect();
+                const eyeCenterX = rect.left + rect.width / 2;
+                const eyeCenterY = rect.top + rect.height / 2;
+                const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                const dist = 2;
+                eye.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+            });
+
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                let newX = initialX + dx;
+                let newY = initialY + dy;
+                newX = Math.max(0, Math.min(newX, 1280 - 60));
+                newY = Math.max(0, Math.min(newY, 720 - 80));
+                robot.style.left = newX + 'px';
+                robot.style.top = newY + 'px';
+                robot.style.bottom = 'auto';
+                robot.style.right = 'auto';
+            }
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        robot.addEventListener('click', (e) => {
+            if (Math.abs(e.clientX - startX) > 5) return;
+            speech.innerText = "¡ALIVIA!";
+            speech.classList.add('active');
+            const robotBody = robot.querySelector('.robot-body');
+            robotBody.style.borderColor = "#ff4d4d";
+            eyes.forEach(eye => eye.style.background = "#ff4d4d");
+            setTimeout(() => {
+                speech.classList.remove('active');
+                robotBody.style.borderColor = "";
+                eyes.forEach(eye => eye.style.background = "");
+            }, 1000);
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) { currentSlide++; updatePresentation(); }
+            if (e.key === 'ArrowLeft' && currentSlide > 0) { currentSlide--; updatePresentation(); }
+        });
+
+        updatePresentation();
+
+        // --- i18n SYSTEM ---
+        let currentLang = 'es';
+
+        const translations = {
+            es: {
+                's1.title': '¿VISTE UN CASO DE CORRUPCIÓN<br>QUE NADIE CONECTÓ?',
+                's1.sub1': 'Tú das la pista. Alivia conecta los puntos. La blockchain lo recuerda.',
+                's1.sub2': 'Agente IA + Grafo público + Syscoin · Memoria pública anti-corrupción para LatAm',
+                's1.footer': 'Hackathon Syscoin Builders LatAm 2026',
+
+                's2.title': '01. La corrupción se sostiene en el olvido',
+                's2.market': 'Sayari Labs · revenue 2023 · sin cobertura LatAm',
+                's2.no': 'Caso revienta → <span class="warning">se olvida en 7 días</span>',
+                's2.yes': 'Sellado on-chain → <span class="highlight">memoria pública inmutable</span>',
+                's2.source': '— Transparencia Internacional · LatAm pierde 5% del PBI por corrupción cada año',
+                's2.pain': '😰 El dolor del ciudadano',
+                's2.quote': '"Denuncié en redes y se olvidó en 3 días. Y resulta que el mismo señalado aparece en otro caso seis meses después — pero <span class="warning">nadie conectó los puntos</span>."',
+                's2.cost': '📰 Notas sueltas en X/TikTok: <strong>cero permanencia</strong>',
+                's2.reject': '🕵️ Sin cruce de datos: <strong>tramas invisibles</strong>',
+
+                's3.title': '02. Cómo funciona Alivia',
+                's3.sub': 'Convierte cada pista ciudadana en un <span class="highlight">eslabón verificable</span> del grafo público',
+                's3.step1': 'Paso 1', 's3.d1': 'Reporta', 's3.d1b': 'Telegram / Discord / Web',
+                's3.step2': 'Paso 2', 's3.d2': 'Entrevista', 's3.d2b': 'El agente pregunta sin presionar',
+                's3.step3': 'Paso 3', 's3.d3': 'Extrae', 's3.d3b': 'Personas, cargos, empresas, vínculos',
+                's3.step4': 'Paso 4', 's3.d4': 'Conecta', 's3.d4b': 'Alerta si cruza con casos previos',
+                's3.step5': 'Paso 5', 's3.d5': 'NFT-Acta', 's3.d5b': 'Sello on-chain en Syscoin',
+                's3.bottom': 'Cada caso cerrado genera un <span class="highlight">hash de evidencia con timestamp</span> en Syscoin → citable por periodistas, ONGs y fiscales',
+
+                's4.title': '03. Producto funcionando ✅',
+                's4.sub': 'No es prototipo. <span class="highlight">Ya está en producción</span> en alivia.sbs',
+                's4.f1t': '🕸️ Grafo público vivo', 's4.f1d': '65 nodos · 14 aristas activas. Personas, cargos, empresas y contratos del ecosistema peruano: Convoca, ONPE, Contraloría, Municipalidad Lima Norte',
+                's4.f2t': '📋 Casos publicados + NFT-Acta', 's4.f2d': 'Token ID 1 ya minteado on-chain. Contrato Alivia Acta (ALV-ACTA) desplegado en Syscoin Tanenbaum Testnet',
+                's4.f3t': '🗳️ Observatorio Electoral', 's4.f3d': 'Verificación ciudadana de actas mesa por mesa contra dataset ONPE. Discrepancias visibles, sellado on-chain',
+                's4.f4t': '📊 Monitor de Licitaciones', 's4.f4d': 'Alertas automáticas con heurísticas H1–H5 sobre SEACE. Postor único, plazo corto, monto anómalo, vínculos previos',
+
+                's5.title': '04. ¿Por qué Syscoin?',
+                's5.sub': 'Alivia eligió <span class="highlight">Syscoin NEVM (Tanenbaum Testnet)</span> por razones estratégicas',
+                's5.f1t': 'Gas Ultra-Bajo', 's5.f1d': 'Mint del NFT-Acta cuesta <strong>fracciones de centavo</strong>. Sellar una denuncia ciudadana no tiene barrera económica',
+                's5.f2t': 'Confirmación en ~5s', 's5.f2d': 'UX fluida en chat: el aportante <strong>recibe el hash de su NFT antes de cerrar la conversación</strong>',
+                's5.f3t': 'Pali Wallet', 's5.f3d': 'Wallet oficial del ecosistema Syscoin. Auto-switch de red, <strong>compatible con UTXO + NEVM</strong>',
+                's5.f4t': 'Path a Mainnet', 's5.f4d': 'Tanenbaum (5700) → <strong>Syscoin NEVM Mainnet</strong> (57). Mismos contratos, mismo viem, sin reescribir nada',
+                's5.faucet': '⛓️ Contrato verificable en <strong>explorer.tanenbaum.io</strong> · merge-mined con Bitcoin',
+
+                's6.title': '05. Cuatro NFTs, cuatro funciones',
+                's6.l1': 'NFT-ACTA', 's6.l1t': 'Memoria pública del caso',
+                's6.l1d': '<span class="highlight">mint(caseId, evidenceHash)</span> — ERC-721 locked-by-design. <strong>Token ID 1 ya minteado en Tanenbaum</strong>',
+                's6.l2': 'NFT-APORTANTE', 's6.l2t': 'Identidad cívica soulbound',
+                's6.l2d': '<span class="highlight">ERC-5114</span> — no transferible. Niveles: Testigo → Vigilante → Investigador → Cronista → Guardiana. Reputación on-chain',
+                's6.l3': 'NFT-BOUNTY', 's6.l3t': 'Recompensa con TSYS bloqueados',
+                's6.l3d': '<span class="highlight">openBounty()</span> + <span class="highlight">claim()</span> — ONGs y ciudadanos financian investigaciones específicas. Skin in the game ciudadano',
+                's6.l4': 'NFT-LLAVE', 's6.l4t': 'Suscripción B2B compliance',
+                's6.l4d': '<span class="highlight">expiresAt</span> verificado on-chain — bancos, due diligence y medios premium pagan suscripción anual como NFT',
+
+                's7.title': '06. Lo que nos diferencia',
+                's7.f1t': 'Cero veredictos', 's7.f1d': 'Score de corroboración 0–1, no juicios. <strong>"Señalado", "vinculado"</strong> — nunca "corrupto". Regla R6 inviolable',
+                's7.f2t': 'Anonimato seudónimo', 's7.f2d': 'Cero PII. El aportante va como <strong>aportante-XXXX</strong>. Sin nombre real, sin email, sin teléfono. Regla R2',
+                's7.f3t': 'Grafo que crece solo', 's7.f3d': 'Network effect real. Cada aporte hace el grafo <strong>más valioso para los próximos</strong>. Moat orgánico',
+                's7.f4t': 'Cobertura LatAm', 's7.f4d': 'Inteligencia ciudadana donde <strong>Sayari y OpenCorporates no llegan</strong>. Diseñada desde la región para la región',
+
+                's8.title': '07. Modelo de negocio · precios',
+                's8.sub': '<strong>Free</strong> para ciudadanos, periodistas y ONGs. <strong>Pagado</strong> para compliance, banca y due diligence. Comparable: <span class="highlight">Sayari Labs · USD 29M/año (2023)</span>',
+                's8.t1tag': '🔑 NFT-LLAVE · LECTURA',
+                's8.t1price': 'USD 3,000', 's8.t1per': ' /año',
+                's8.t1who': 'Periodistas premium · ONGs medianas',
+                's8.t1f1': 'API read-only', 's8.t1f2': '10k queries/mes', 's8.t1f3': 'Export CSV/JSON', 's8.t1f4': '1 seat',
+                's8.t2pop': 'POPULAR',
+                's8.t2tag': '🔑 NFT-LLAVE · INVESTIGADOR',
+                's8.t2price': 'USD 8,000', 's8.t2per': ' /año',
+                's8.t2who': 'Due diligence · medios · firmas legales',
+                's8.t2f1': 'Todo lo de Lectura', 's8.t2f2': 'Alertas tiempo real', 's8.t2f3': 'Dashboard avanzado', 's8.t2f4': '3 seats · webhooks',
+                's8.t3tag': '🔑 NFT-LLAVE · ENTERPRISE',
+                's8.t3price': 'USD 15K+', 's8.t3per': ' /año',
+                's8.t3who': 'Bancos · compliance · gobierno honesto',
+                's8.t3f1': 'Todo lo de Investigador', 's8.t3f2': 'Grafo histórico', 's8.t3f3': 'Seats ilimitados', 's8.t3f4': 'Soporte dedicado · SLA',
+                's8.free': '🆓 Free tier · alimenta el grafo',
+                's8.freed': 'Ciudadanos, periodistas independientes, ONGs anti-corrupción y académicos · acceso al grafo sin login · queries en lenguaje natural · sin tope',
+                's8.fees': '⛓️ Fees on-chain (Syscoin)',
+                's8.feesd': 'NFT-Aporte: <strong>1 TSYS</strong> · NFT-Caso: <strong>10 TSYS</strong> · Bounty mint: <strong>2% del pool</strong>',
+
+                's9.title': '08. Historias de ciudadanos',
+                's9.j.q': '"El alcalde nombró a su primo y nadie va a hacer nada"',
+                's9.j.a': '<span style="color: var(--neon-purple); font-weight: bold;">Con Alivia:</span> Reporta por Telegram, Alivia entrevista en 3 minutos, mintea NFT-Acta. El caso queda <strong>citable en blockchain</strong> para siempre',
+                's9.v.q': '"Tengo 3 casos investigados pero no logro cruzarlos sola"',
+                's9.v.a': '<span style="color: var(--neon-purple); font-weight: bold;">Con Alivia:</span> Pregunta por Discord "¿quién es Juan Pérez?". El grafo devuelve el dossier completo con <strong>vínculos, contratos y aportes ciudadanos</strong>',
+                's9.c.q': '"Necesitamos evidencia específica de una licitación dudosa"',
+                's9.c.a': '<span style="color: var(--neon-purple); font-weight: bold;">Con NFT-Bounty:</span> Bloquea 250 TSYS, define los criterios. Cuando un aportante entrega la evidencia válida, <strong>reclama la recompensa automáticamente</strong>',
+
+                's10.title': '09. Roadmap y tracción',
+                's10.q1': '✅ JUN 2026 — HOY',
+                's10.q2': '📍 Q3 2026',
+                's10.q3': '🔮 Q4 2026 — 2027',
+                's10.done': '⚡ <strong>Plataforma viva en producción</strong> · NFT on-chain real · <span class="highlight">alivia.sbs</span>',
+
+                's11.title': '10. Pruébalo ahora mismo',
+                's11.sub': 'Es <span class="highlight">público y gratuito</span>. Nada de logins ni billeteras.',
+                's11.s1': '1. Visita', 's11.s2': '2. Habla', 's11.s3': '3. Explora', 's11.s3l': 'El grafo público',
+                's11.s4': '4. Verifica', 's11.s4l': 'El NFT-Acta on-chain',
+
+                's12.title': 'LA CORRUPCIÓN SE SOSTIENE<br><span style="color: var(--neon-purple);">EN EL OLVIDO</span>',
+                's12.sub0': 'Alivia es lo contrario del olvido.',
+                's12.cta': 'Vota por Alivia 🗳️',
+                's12.sub': 'Ayúdanos a darle memoria pública a LatAm',
+                's12.footer': 'Hackathon Syscoin Builders LatAm 2026 · $SYS es el camino 🚀',
+
+                'nav.hint': 'Flechas ← → | Arrastra al ROBOT',
+            },
+            en: {
+                's1.title': 'DID YOU SEE A CORRUPTION CASE<br>THAT NO ONE CONNECTED?',
+                's1.sub1': 'You give the tip. Alivia connects the dots. The blockchain remembers.',
+                's1.sub2': 'AI agent + Public graph + Syscoin · Public anti-corruption memory for LatAm',
+                's1.footer': 'Hackathon Syscoin Builders LatAm 2026',
+
+                's2.title': '01. Corruption thrives on forgetting',
+                's2.market': 'Sayari Labs · 2023 revenue · weak LatAm coverage',
+                's2.no': 'Case breaks → <span class="warning">forgotten in 7 days</span>',
+                's2.yes': 'On-chain sealed → <span class="highlight">immutable public memory</span>',
+                's2.source': '— Transparency International · LatAm loses 5% of GDP to corruption yearly',
+                's2.pain': "😰 The citizen's pain",
+                's2.quote': '"I reported it on socials and it was forgotten in 3 days. And it turns out the same person appears in another case six months later — but <span class="warning">no one connected the dots</span>."',
+                's2.cost': '📰 Loose posts on X/TikTok: <strong>zero permanence</strong>',
+                's2.reject': '🕵️ No data cross-referencing: <strong>invisible patterns</strong>',
+
+                's3.title': '02. How Alivia works',
+                's3.sub': 'Turns every citizen tip into a <span class="highlight">verifiable link</span> in the public graph',
+                's3.step1': 'Step 1', 's3.d1': 'Report', 's3.d1b': 'Telegram / Discord / Web',
+                's3.step2': 'Step 2', 's3.d2': 'Interview', 's3.d2b': 'The agent asks without pressure',
+                's3.step3': 'Step 3', 's3.d3': 'Extract', 's3.d3b': 'People, roles, companies, ties',
+                's3.step4': 'Step 4', 's3.d4': 'Connect', 's3.d4b': 'Alert when it matches prior cases',
+                's3.step5': 'Step 5', 's3.d5': 'NFT-Acta', 's3.d5b': 'On-chain seal in Syscoin',
+                's3.bottom': 'Each closed case generates an <span class="highlight">evidence hash with timestamp</span> in Syscoin → citable by journalists, NGOs and prosecutors',
+
+                's4.title': '03. Working product ✅',
+                's4.sub': "It's not a prototype. <span class=\"highlight\">Already in production</span> at alivia.sbs",
+                's4.f1t': '🕸️ Live public graph', 's4.f1d': '65 nodes · 14 active edges. People, roles, companies and contracts from the Peruvian ecosystem: Convoca, ONPE, Contraloría, Municipality of Lima Norte',
+                's4.f2t': '📋 Published cases + NFT-Acta', 's4.f2d': 'Token ID 1 already minted on-chain. Alivia Acta (ALV-ACTA) contract deployed on Syscoin Tanenbaum Testnet',
+                's4.f3t': '🗳️ Electoral Observatory', 's4.f3d': 'Citizen verification of polling-station tallies against ONPE official dataset. Discrepancies visible, on-chain sealed',
+                's4.f4t': '📊 Bidding Monitor', 's4.f4d': 'Automatic alerts with H1–H5 heuristics on SEACE. Single bidder, short deadline, anomalous amount, prior graph ties',
+
+                's5.title': '04. Why Syscoin?',
+                's5.sub': 'Alivia chose <span class="highlight">Syscoin NEVM (Tanenbaum Testnet)</span> for strategic reasons',
+                's5.f1t': 'Ultra-low gas', 's5.f1d': 'NFT-Acta mint costs <strong>fractions of a cent</strong>. Sealing a citizen report has no economic barrier',
+                's5.f2t': '~5s confirmation', 's5.f2d': 'Smooth chat UX: the contributor <strong>gets the NFT hash before the conversation ends</strong>',
+                's5.f3t': 'Pali Wallet', 's5.f3d': 'Official Syscoin ecosystem wallet. Auto network switch, <strong>UTXO + NEVM compatible</strong>',
+                's5.f4t': 'Path to Mainnet', 's5.f4d': 'Tanenbaum (5700) → <strong>Syscoin NEVM Mainnet</strong> (57). Same contracts, same viem, no rewrite',
+                's5.faucet': '⛓️ Contract verifiable on <strong>explorer.tanenbaum.io</strong> · merge-mined with Bitcoin',
+
+                's6.title': '05. Four NFTs, four functions',
+                's6.l1': 'NFT-ACTA', 's6.l1t': 'Public memory of the case',
+                's6.l1d': '<span class="highlight">mint(caseId, evidenceHash)</span> — ERC-721 locked-by-design. <strong>Token ID 1 already minted on Tanenbaum</strong>',
+                's6.l2': 'NFT-CONTRIBUTOR', 's6.l2t': 'Soulbound civic identity',
+                's6.l2d': '<span class="highlight">ERC-5114</span> — non-transferable. Tiers: Witness → Watcher → Investigator → Chronicler → Guardian. On-chain reputation',
+                's6.l3': 'NFT-BOUNTY', 's6.l3t': 'Reward with locked TSYS',
+                's6.l3d': '<span class="highlight">openBounty()</span> + <span class="highlight">claim()</span> — NGOs and citizens fund specific investigations. Citizen skin in the game',
+                's6.l4': 'NFT-KEY', 's6.l4t': 'B2B compliance subscription',
+                's6.l4d': '<span class="highlight">expiresAt</span> verified on-chain — banks, due diligence and premium media pay annual subscription as NFT',
+
+                's7.title': '06. What sets us apart',
+                's7.f1t': 'Zero verdicts', 's7.f1d': "Corroboration score 0–1, not judgments. <strong>\"Flagged\", \"linked\"</strong> — never \"corrupt\". Rule R6 inviolable",
+                's7.f2t': 'Pseudonymous anonymity', 's7.f2d': 'Zero PII. The contributor is just <strong>contributor-XXXX</strong>. No real name, no email, no phone. Rule R2',
+                's7.f3t': 'Graph that grows itself', 's7.f3d': 'Real network effect. Each contribution makes the graph <strong>more valuable for the next ones</strong>. Organic moat',
+                's7.f4t': 'LatAm coverage', 's7.f4d': "Citizen intelligence where <strong>Sayari and OpenCorporates don't reach</strong>. Designed from the region for the region",
+
+                's8.title': '07. Business model · pricing',
+                's8.sub': '<strong>Free</strong> for citizens, journalists and NGOs. <strong>Paid</strong> for compliance, banking and due diligence. Comparable: <span class="highlight">Sayari Labs · USD 29M/yr (2023)</span>',
+                's8.t1tag': '🔑 NFT-KEY · READ',
+                's8.t1price': 'USD 3,000', 's8.t1per': ' /yr',
+                's8.t1who': 'Premium journalists · mid-size NGOs',
+                's8.t1f1': 'Read-only API', 's8.t1f2': '10k queries/mo', 's8.t1f3': 'CSV/JSON export', 's8.t1f4': '1 seat',
+                's8.t2pop': 'POPULAR',
+                's8.t2tag': '🔑 NFT-KEY · INVESTIGATOR',
+                's8.t2price': 'USD 8,000', 's8.t2per': ' /yr',
+                's8.t2who': 'Due diligence · media · law firms',
+                's8.t2f1': 'Everything in Read', 's8.t2f2': 'Real-time alerts', 's8.t2f3': 'Advanced dashboard', 's8.t2f4': '3 seats · webhooks',
+                's8.t3tag': '🔑 NFT-KEY · ENTERPRISE',
+                's8.t3price': 'USD 15K+', 's8.t3per': ' /yr',
+                's8.t3who': 'Banks · compliance · honest government',
+                's8.t3f1': 'Everything in Investigator', 's8.t3f2': 'Historical graph', 's8.t3f3': 'Unlimited seats', 's8.t3f4': 'Dedicated support · SLA',
+                's8.free': '🆓 Free tier · feeds the graph',
+                's8.freed': "Citizens, independent journalists, anti-corruption NGOs and academics · graph access without login · natural-language queries · no cap",
+                's8.fees': '⛓️ On-chain fees (Syscoin)',
+                's8.feesd': 'NFT-Contribution: <strong>1 TSYS</strong> · NFT-Case: <strong>10 TSYS</strong> · Bounty mint: <strong>2% of pool</strong>',
+
+                's9.title': '08. Citizen stories',
+                's9.j.q': "\"The mayor appointed his cousin and no one's going to do anything\"",
+                's9.j.a': '<span style="color: var(--neon-purple); font-weight: bold;">With Alivia:</span> Reports via Telegram, Alivia interviews in 3 minutes, mints NFT-Acta. The case stays <strong>citable on blockchain</strong> forever',
+                's9.v.q': '"I have 3 investigated cases but I can\'t cross-reference them alone"',
+                's9.v.a': '<span style="color: var(--neon-purple); font-weight: bold;">With Alivia:</span> Asks via Discord "who is Juan Pérez?". The graph returns the full dossier with <strong>ties, contracts and citizen reports</strong>',
+                's9.c.q': '"We need specific evidence about a dubious bidding"',
+                's9.c.a': '<span style="color: var(--neon-purple); font-weight: bold;">With NFT-Bounty:</span> Locks 250 TSYS, sets criteria. When a contributor delivers valid evidence, they <strong>claim the reward automatically</strong>',
+
+                's10.title': '09. Roadmap & traction',
+                's10.q1': '✅ JUN 2026 — TODAY',
+                's10.q2': '📍 Q3 2026',
+                's10.q3': '🔮 Q4 2026 — 2027',
+                's10.done': '⚡ <strong>Platform live in production</strong> · real on-chain NFT · <span class="highlight">alivia.sbs</span>',
+
+                's11.title': '10. Try it right now',
+                's11.sub': 'Everything is <span class="highlight">public and free</span>. No logins, no wallets needed.',
+                's11.s1': '1. Visit', 's11.s2': '2. Talk', 's11.s3': '3. Explore', 's11.s3l': 'The public graph',
+                's11.s4': '4. Verify', 's11.s4l': 'The on-chain NFT-Acta',
+
+                's12.title': 'CORRUPTION THRIVES<br><span style="color: var(--neon-purple);">ON FORGETTING</span>',
+                's12.sub0': 'Alivia is the opposite of forgetting.',
+                's12.cta': 'Vote for Alivia 🗳️',
+                's12.sub': 'Help us give public memory to LatAm',
+                's12.footer': 'Hackathon Syscoin Builders LatAm 2026 · $SYS is the way 🚀',
+
+                'nav.hint': 'Arrows ← → | Drag the ROBOT',
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            const esEl = document.getElementById('langES');
+            const enEl = document.getElementById('langEN');
+            if (lang === 'es') {
+                esEl.className = 'active-lang';
+                enEl.className = 'inactive-lang';
+            } else {
+                esEl.className = 'inactive-lang';
+                enEl.className = 'active-lang';
+            }
+        }
+
+        document.getElementById('langToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            setLanguage(currentLang === 'es' ? 'en' : 'es');
+        });
+
+    </script>
+
+</body>
+
+</html>
