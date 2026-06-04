@@ -1,7 +1,5 @@
-import { readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import type { ChatSession, PrismaClient } from "@prisma/client";
+import { ALIVIA_SYSTEM_PROMPT } from "./prompts/aliviaSystemPrompt";
 import type { LLMProvider } from "./llm/provider";
 import {
   readState,
@@ -39,61 +37,61 @@ export interface AgentTurnOutput {
   caseToMint?: AporteCase;
 }
 
-const PROMPT_PATH = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "prompts",
-  "alivia-system.es.md",
-);
-let cachedSystemPrompt: string | null = null;
-
 async function getSystemPrompt(): Promise<string> {
-  if (!cachedSystemPrompt) {
-    cachedSystemPrompt = await readFile(PROMPT_PATH, "utf-8");
-  }
-  return cachedSystemPrompt;
+  return ALIVIA_SYSTEM_PROMPT;
 }
 
 const FINALIZE_TRIGGERS = /\b(publicar|publica|publicalo|listo|ya|cierra|cerrar)\b/i;
 const MAX_INTERVIEW_TURNS = 6;
 
+const RESET_TRIGGERS = /^\s*(\/start|\/reset|empezar de nuevo|reiniciar)\s*$/i;
+
 export async function runAgentTurn(
   deps: AgentDeps,
   input: AgentTurnInput,
 ): Promise<AgentTurnOutput> {
+  // Reset explícito: limpia la sesión y responde con saludo via LLM.
+  if (RESET_TRIGGERS.test(input.userMessage)) {
+    await updateSessionState(deps.prisma, input.session.id, {
+      intent: null,
+      partialCase: {},
+      turnCount: 0,
+    });
+    return runConversational(deps, "Hola, ¿en qué me presento? Saluda al usuario en 2-3 líneas.", []);
+  }
+
   const state = readState(input.session);
 
-  // 1. Si hay aporte pendiente esperando confirmación (R10), procesar.
+  // 1. R10: si hay aporte pendiente esperando confirmación, procesar primero.
   if (state.partialCase.pendingConfirmation) {
     return handleConfirmation(deps, input.session, state, input.userMessage);
   }
 
-  // 2. Clasificar intent si aún no está fijado en la sesión.
-  let intent: Intent = (state.intent as Intent | null) ?? "fuera_alcance";
-  if (!state.intent) {
-    intent = await classifyIntent(deps.llm, input.userMessage, input.history);
-    await updateSessionState(deps.prisma, input.session.id, { intent });
+  // 2. Si ya estamos en flujo de denuncia activo, seguir ahí (la entrevista
+  //    es multi-turno hasta que el usuario diga "publicar").
+  if (state.intent === "denuncia") {
+    return runDenunciaFlow(deps, input.session, state, input.userMessage, input.history);
   }
 
-  // 3. Ramificar por intent.
-  switch (intent) {
-    case "denuncia":
-      return runDenunciaFlow(deps, input.session, state, input.userMessage, input.history);
-    case "consulta":
-      return runConsultaFlow(deps, input.userMessage);
-    case "bounty_crear":
-    case "bounty_reclamar":
-      return {
-        text: "Los bounties están disponibles en alivia.sbs/bounties. (Mockup en MVP — la creación end-to-end llega post-hackathon.)",
-      };
-    case "acta_subir":
-      return {
-        text: "El observatorio electoral está en alivia.sbs/elecciones. (Mockup en MVP.)",
-      };
-    default:
-      return {
-        text: "Recibo pistas ciudadanas de corrupción y respondo consultas sobre personas, cargos o empresas. ¿En qué te ayudo?",
-      };
+  // 3. Si NO hay flujo activo, clasificar este mensaje para ver si arranca uno.
+  const intent = await classifyIntent(deps.llm, input.userMessage, input.history);
+
+  if (intent === "denuncia") {
+    await updateSessionState(deps.prisma, input.session.id, { intent });
+    return runDenunciaFlow(deps, input.session, state, input.userMessage, input.history);
   }
+
+  if (intent === "consulta") {
+    // Intenta resolver desde el grafo. Si no hay match, cae al chat conversacional
+    // (no se pega a "consulta" en la sesión).
+    const dossier = await tryConsultaFromGraph(deps, input.userMessage);
+    if (dossier) return { text: dossier };
+  }
+
+  // 4. Resto (fuera_alcance, consulta sin match, bounty/acta): conversación
+  //    natural con el system prompt. NUNCA texto canned — Alivia tiene voz
+  //    propia (instinct.md) que el LLM aplica.
+  return runConversational(deps, input.userMessage, input.history);
 }
 
 // =============================================================================
@@ -242,36 +240,62 @@ function inferScoreFactorsFromMessage(text: string) {
 }
 
 // =============================================================================
-// Flujo: CONSULTA
+// Flujo: CONSULTA (sólo se invoca si el grafo tiene match — sino cae a conv)
 // =============================================================================
 
-async function runConsultaFlow(
+async function tryConsultaFromGraph(
   deps: AgentDeps,
   userMessage: string,
-): Promise<AgentTurnOutput> {
-  const nameMatch = userMessage.match(/quien es ([^?\.]+)|qué sabes de ([^?\.]+)|sobre ([^?\.]+)/i);
-  const name = (nameMatch?.[1] ?? nameMatch?.[2] ?? nameMatch?.[3] ?? userMessage).trim();
+): Promise<string | null> {
+  const nameMatch = userMessage.match(
+    /(?:qui[eé]n es|qué sabes de|que sabes de|sobre)\s+([^?\.\n]+)/i,
+  );
+  const name = nameMatch?.[1]?.trim();
+  if (!name || name.length < 3) return null;
 
   const candidates = await findMatchingEntities(deps.prisma, [name]);
-  if (candidates.length === 0) {
-    return {
-      text: `No tengo registros sobre "${name}". Si tienes información, puedes ser quien aporte el primer reporte.`,
-    };
-  }
+  if (candidates.length === 0) return null;
 
   const dossier = await getDossier(deps.prisma, candidates[0].id);
-  const edgeSummary = dossier?.outgoingEdges
-    .concat(dossier.incomingEdges)
-    .slice(0, 5)
-    .map((e) => `  · ${e.type} (confianza ${e.confidence.toFixed(2)})`)
+  const edges = (dossier?.outgoingEdges ?? []).concat(dossier?.incomingEdges ?? []).slice(0, 5);
+  const edgeSummary = edges
+    .map((e) => `  · ${e.type.toLowerCase()} (confianza ${e.confidence.toFixed(2)})`)
     .join("\n");
 
-  return {
-    text:
-      `Dossier de ${candidates[0].label} (${candidates[0].type}):\n` +
-      (edgeSummary ?? "  · sin vínculos registrados") +
-      `\nCasos asociados: ${dossier?.cases.length ?? 0}.`,
-  };
+  return (
+    `Dossier de ${candidates[0].label} (${candidates[0].type.toLowerCase()}):\n` +
+    (edgeSummary || "  · sin vínculos registrados") +
+    `\nCasos asociados: ${dossier?.cases.length ?? 0}.\n\n` +
+    `Si tienes información nueva sobre ${candidates[0].label}, escríbeme y la sumamos.`
+  );
+}
+
+// =============================================================================
+// Flujo: CONVERSACIONAL (default)
+// Toda interacción que no sea denuncia-en-curso, confirmación R10 ni consulta
+// con match en grafo, pasa por el LLM con el system prompt completo.
+// Alivia conserva su voz (instinct.md) en cualquier respuesta.
+// =============================================================================
+
+async function runConversational(
+  deps: AgentDeps,
+  userMessage: string,
+  history?: string[],
+): Promise<AgentTurnOutput> {
+  const systemPrompt = await getSystemPrompt();
+  const response = await deps.llm.complete({
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...(history ?? []).slice(-6).map((m, i) => ({
+        role: (i % 2 === 0 ? "user" : "assistant") as "user" | "assistant",
+        content: m,
+      })),
+      { role: "user", content: userMessage },
+    ],
+    temperature: 0.6,
+    maxTokens: 350,
+  });
+  return { text: response.content };
 }
 
 // Re-export for ergonomic use in tools.ts / tests
