@@ -105,9 +105,19 @@ async function runDenunciaFlow(
   userMessage: string,
   history?: string[],
 ): Promise<AgentTurnOutput> {
-  // Detectar trigger explícito de finalización
-  if (FINALIZE_TRIGGERS.test(userMessage) || state.turnCount >= MAX_INTERVIEW_TURNS) {
-    return tryFinalize(deps, session, state, userMessage);
+  // Acumular el mensaje del usuario en el historial de la denuncia, para
+  // que tryFinalize pueda extraer entidades del flujo completo, no sólo
+  // del trigger "publicar".
+  const rawHistory = Array.isArray((state.partialCase as any).rawHistory)
+    ? ((state.partialCase as any).rawHistory as string[])
+    : [];
+  const isFinalize =
+    FINALIZE_TRIGGERS.test(userMessage) || state.turnCount >= MAX_INTERVIEW_TURNS;
+  // El trigger "publicar" no debe sumarse al cuerpo de la denuncia (es sólo señal)
+  if (!isFinalize) rawHistory.push(userMessage);
+
+  if (isFinalize) {
+    return tryFinalize(deps, session, { ...state, partialCase: { ...state.partialCase, rawHistory } }, userMessage);
   }
 
   // Conversación natural usando el system prompt
@@ -127,6 +137,7 @@ async function runDenunciaFlow(
 
   await updateSessionState(deps.prisma, session.id, {
     turnCount: state.turnCount + 1,
+    partialCase: { ...state.partialCase, rawHistory },
   });
 
   return { text: llmResponse.content };
@@ -138,7 +149,12 @@ async function tryFinalize(
   state: ConversationState,
   userMessage: string,
 ): Promise<AgentTurnOutput> {
-  const rawText = [userMessage, ...Object.values(state.partialCase ?? {})].join("\n");
+  // Construir el texto completo de la denuncia desde rawHistory (todos los
+  // turnos del usuario) — NO del solo trigger "publicar".
+  const rawHistory = Array.isArray((state.partialCase as any).rawHistory)
+    ? ((state.partialCase as any).rawHistory as string[])
+    : [];
+  const rawText = rawHistory.length > 0 ? rawHistory.join("\n") : userMessage;
   const extracted = await extractEntities(deps.llm, rawText);
 
   const subjectPerson = extracted.people[0];
