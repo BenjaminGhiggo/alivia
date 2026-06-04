@@ -15,6 +15,7 @@ VPS Linux + Docker. Tres subdominios detrás de un único proxy `rash07/nginx-pr
 | Cliente Vite (SPA) | `<host>` | `client_$N` (nginx) | `app/.wasp/out/web-app/build` |
 | Server Wasp (Node) | `api.<host>` | `server_$N` | `app/.wasp/out/Dockerfile` |
 | Docs Astro | `docs.<host>` | `docs_$N` (nginx) | `blog/dist` |
+| Bot Telegram | — (interno) | `bot_telegram_$N` (Node 24 + grammY) | `bots/telegram/Dockerfile` |
 | Postgres | — | `postgres_$N` | imagen `postgres:16` |
 
 Postgres vive en docker-compose. **No usar `wasp start db`** (eso es de dev) en producción.
