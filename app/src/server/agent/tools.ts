@@ -4,6 +4,7 @@ import type { LLMProvider } from "./llm/provider";
 import { computeCorroborationScore, isPublishable, type ScoreFactors } from "./_score";
 import { findMatchingEntities, findNodesByLabel, getDossier } from "../graph/queries";
 import { createEdge, upsertNode } from "../graph/mutations";
+import { z } from "zod";
 import { AporteCase, nextCaseId } from "./_schema";
 
 /**
@@ -140,7 +141,7 @@ export async function persistCase(
   prisma: PrismaClient,
   input: PersistCaseInput,
   now: Date = new Date(),
-): Promise<typeof AporteCase._type> {
+): Promise<z.infer<typeof AporteCase>> {
   // 1. Resolver sujeto (upsert)
   const subjectNode = await upsertNode(prisma, {
     type: "PERSONA",
