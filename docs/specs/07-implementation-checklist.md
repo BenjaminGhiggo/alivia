@@ -116,14 +116,14 @@ Referencias: [03-use-cases](03-use-cases.md), [05-architecture §3.8](05-archite
 
 ---
 
-### F6 — Seed completo + Mockups (T17–T19) [0/4]
+### F6 — Seed completo + Mockups (T17–T19) [4/4] ✅
 
 Referencias: [02-data-model §9](02-data-model.md), [03-use-cases casos 3–5](03-use-cases.md).
 
-- [ ] **6.1** Seed completo: 30 personas + 15 empresas + 10 cargos + 5 contratos + 5 familias + ~80 aristas. CSVs en `data/seed/`.
-- [ ] **6.2** `app/src/client/pages/Bounties.tsx` — mockup con 3 bounties pre-cargados (AC3.2).
-- [ ] **6.3** `app/src/client/pages/Elecciones.tsx` — mockup con 2 actas verificadas pre-cargadas (AC4.1).
-- [ ] **6.4** `app/src/client/pages/Licitaciones.tsx` — mockup con 3 alertas pre-generadas (AC5.1).
+- [x] **6.1** `seedGraph.ts` expandido a 30 personas + 15 empresas + 10 cargos + 5 contratos + 5 familias + aristas representativas (GANO, ES_PARIENTE_DE, DESIGNO, ES_DUENO_DE). Data ilustrativa con `risk_flags=['seed_data']` — el equipo curador reemplaza con OSINT real (Convoca/OjoPúblico/SEACE) antes del demo.
+- [x] **6.2** `app/src/client/pages/BountiesPage.tsx` — mockup con 3 bounties (1 abierto Lima Norte 100 TSYS, 1 abierto Pedro Quispe 50 TSYS, 1 claimed 75 TSYS).
+- [x] **6.3** `app/src/client/pages/EleccionesPage.tsx` — mockup con 2 actas (Mesa 003421 coincide, Mesa 007812 discrepancia).
+- [x] **6.4** `app/src/client/pages/LicitacionesPage.tsx` — mockup con 3 alertas H1-H5 (postor único, recurrencia, plazo corto + monto anómalo).
 
 **Demo gate:** `alivia.sbs` recorrible: grafo poblado + 4 páginas mockup con contenido.
 
@@ -184,7 +184,7 @@ F2 — Agente + Router + Tools          [██████████] 8/8 ✅
 F3 — Bots Telegram + Discord          [██████░░░░] 4/6 (2 creds manuales)
 F4 — Contrato + Mint                  [██████████] 5/5 ✅
 F5 — Vista web                        [████████░░] 5/7 (SSE+Aportante post)
-F6 — Seed completo + Mockups          [░░░░░░░░░░] 0/4
+F6 — Seed completo + Mockups          [██████████] 4/4 ✅
 F7 — Smoke + Ensayo                   [░░░░░░░░░░] 0/4
 F8 — Video YouTube                    [░░░░░░░░░░] 0/3
 F9 — Entregables finales              [░░░░░░░░░░] 0/5
