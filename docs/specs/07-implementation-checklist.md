@@ -47,7 +47,7 @@ Referencia: [02-data-model.md §6](02-data-model.md).
 - [x] **1.1** Enums `NodeType` y `EdgeType` agregados a `app/schema.prisma`.
 - [x] **1.2** Modelos `Node` y `Edge` con índices.
 - [x] **1.3** Modelos `Case`, `Contributor`, `Evidence`, `Bounty`, más `ChatSession` para estado de conversación.
-- [ ] **1.4** Migración: `wasp db migrate-dev --name "alivia-graph-init"` corre limpio.
+- [x] **1.4** Migración: `app/migrations/20260604031049_alivia_graph_init/migration.sql` generada via `prisma migrate diff`. Se aplica sola al boot del server por `prisma migrate deploy`.
 - [ ] **1.5** `scripts/seed-graph.ts` con OSINT mínimo (~10 nodos para tests; seed full en F6).
 
 **Demo gate:** `wasp db studio` muestra el grafo seed; `SELECT count(*) FROM "Node"` ≥ 10.
