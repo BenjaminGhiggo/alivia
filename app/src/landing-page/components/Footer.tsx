@@ -58,7 +58,7 @@ export default function Footer({
           <div className="flex flex-col gap-4">
             <span className="text-lg font-bold text-foreground">ALIVIA</span>
             <p className="max-w-xs text-sm text-muted-foreground">
-              El futuro del voto digital, seguro y transparente.
+              Memoria pública contra la corrupción en Latinoamérica.
             </p>
             <a href={`mailto:${ContactEmail}`} className="text-sm text-muted-foreground hover:text-foreground">
               {ContactEmail}

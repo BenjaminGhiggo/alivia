@@ -1,4 +1,4 @@
-import { Fingerprint, Vote, Link, SearchCheck } from "lucide-react";
+import { MessageCircle, Bot, Link, SearchCheck } from "lucide-react";
 import CrystalIcon from "./CrystalIcon";
 import SectionTitle from "./components/SectionTitle";
 
@@ -10,24 +10,24 @@ interface Step {
 
 const steps: Step[] = [
   {
-    icon: <CrystalIcon color="#00d2ff"><Fingerprint className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
-    title: "Registro",
-    description: "Verificación de identidad con IA: biometría facial + documento de identidad.",
+    icon: <CrystalIcon color="#00d2ff"><MessageCircle className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
+    title: "Reporta",
+    description: "Escribele a Alivia en Telegram o Discord. Cuentale lo que viste — una licitacion sospechosa, un vinculo familiar, un contrato amanado.",
   },
   {
-    icon: <CrystalIcon color="#a855f7"><Vote className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
-    title: "Votación",
-    description: "Selección de candidato u opción en una interfaz segura e intuitiva.",
+    icon: <CrystalIcon color="#a855f7"><Bot className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
+    title: "Entrevista",
+    description: "Alivia te hace preguntas para estructurar tu pista: fechas, nombres, cargos, empresas, evidencia disponible. Sin apuro, sin interrumpir.",
   },
   {
     icon: <CrystalIcon color="#f59e0b"><Link className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
-    title: "Registro en Blockchain",
-    description: "El voto cifrado se registra en Syscoin NEVM como transacción inmutable.",
+    title: "Conecta y sella",
+    description: "Tu aporte se vincula al grafo publico y se mintea un NFT-Acta en Syscoin Tanenbaum. Nadie puede borrarlo.",
   },
   {
     icon: <CrystalIcon color="#34d399"><SearchCheck className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>,
-    title: "Verificación",
-    description: "Cualquier persona puede auditar el resultado en el explorador de bloques.",
+    title: "Consulta",
+    description: "Cualquier persona puede explorar el grafo, preguntarle a Alivia por un nombre, o citar el hash del NFT-Acta para verificar.",
   },
 ];
 
@@ -36,7 +36,7 @@ export default function HowItWorks() {
     <div id="how-it-works" className="mx-auto my-16 max-w-7xl px-4 sm:my-24 sm:px-6 md:my-32 lg:px-8">
       <SectionTitle
         title="Cómo funciona"
-        description="Cuatro pasos simples para una votación segura y transparente"
+        description="Cuatro pasos para que una pista ciudadana se vuelva memoria publica"
       />
       <div className="relative mt-10 sm:mt-14 md:mt-20">
         <div className="absolute left-1/2 top-0 hidden h-full w-0.5 -translate-x-1/2 bg-gradient-to-b from-amber-400 to-purple-400 md:block" />

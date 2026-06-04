@@ -15,7 +15,7 @@ export default function FeaturesGrid({ features, className = "" }: FeaturesGridP
     >
       <SectionTitle
         title="Características"
-        description="Todo lo que necesitas para una votación digital segura"
+        description="Todo lo que necesitas para convertir una pista ciudadana en memoria pública verificable"
       />
       <div className={`mx-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mx-6 lg:mx-8 lg:grid-cols-3 ${className}`}>
         {features.map((feature) => (
