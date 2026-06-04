@@ -86,15 +86,15 @@ Referencia: [05-architecture §3.1](05-architecture.md).
 
 ---
 
-### F4 — Contrato AliviaActa + Mint (T12–T14) [0/5]
+### F4 — Contrato AliviaActa + Mint (T12–T14) [5/5] ✅
 
 Referencias: [04-nfts §3](04-nfts.md), [05-architecture §3.6](05-architecture.md).
 
-- [ ] **4.1** Setup Hardhat en `contracts/`, configurar red zkSYS testnet (chainId + RPC).
-- [ ] **4.2** `contracts/AliviaActa.sol` siguiendo skeleton 04 §3.7 (ERC-721 locked-by-design, mint `onlyOwner`).
-- [ ] **4.3** `contracts/scripts/deploy-acta.ts` → deploy a zkSYS testnet. Registrar dirección en [04-nfts §7](04-nfts.md) y `.env` como `ALIVIA_ACTA_CONTRACT`.
-- [ ] **4.4** `app/src/server/chain/mintActa.ts` con `viem`, lee `ALIVIA_VAULT_PRIVATE_KEY` del `.env`.
-- [ ] **4.5** `app/src/server/chain/ipfs.ts` sube metadata vía `web3.storage`. Token en `WEB3_STORAGE_TOKEN`.
+- [x] **4.1** `contracts/hardhat.config.ts` con Solidity 0.8.24 + OZ v5 + customChain `zksysTestnet` (chainId 5701, RPC oficial). Lee env desde `app/.env.server`.
+- [x] **4.2** `contracts/contracts/AliviaActa.sol` siguiendo 04 §3.7: ERC-721 + ERC721URIStorage + Ownable, `_update` override para locked-by-design, mint `onlyOwner` con guard `caseIdToToken[caseId] == 0`.
+- [x] **4.3** `contracts/scripts/deploy-acta.ts` → deploy + verify automático en explorer (best-effort). Imprime address y comando para poblar `.env`.
+- [x] **4.4** `app/src/server/chain/mintActa.ts` con `viem` (createPublicClient/WalletClient, defineChain). `getMintActaService()` con fallback a `MockMintActaService` si faltan creds (fail-soft → demo no muere). El minteo se dispara fire-and-forget desde `agentTurn` cuando hay `caseToMint`.
+- [x] **4.5** `app/src/server/chain/ipfs.ts` con `Web3StorageService` (POST /upload) + `DataUriIpfsService` fallback. `buildActaMetadata` arma JSON según 04 §3.5.
 
 **Demo gate:** `scripts/mint-test-acta.ts` mintea un acta de prueba; tx hash y tokenId visibles en explorer zkSYS testnet.
 
@@ -182,7 +182,7 @@ F0 — Setup + Voz                      [██████████] 4/4 ✅
 F1 — Schema + Migración + Seed        [██████████] 5/5 ✅
 F2 — Agente + Router + Tools          [██████████] 8/8 ✅
 F3 — Bots Telegram + Discord          [██████░░░░] 4/6 (2 creds manuales)
-F4 — Contrato + Mint                  [░░░░░░░░░░] 0/5
+F4 — Contrato + Mint                  [██████████] 5/5 ✅
 F5 — Vista web                        [░░░░░░░░░░] 0/7
 F6 — Seed completo + Mockups          [░░░░░░░░░░] 0/4
 F7 — Smoke + Ensayo                   [░░░░░░░░░░] 0/4
