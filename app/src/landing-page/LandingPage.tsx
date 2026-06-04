@@ -15,6 +15,7 @@ import HowItWorks from "./HowItWorks";
 import BlockchainSection from "./BlockchainSection";
 import SecurityFeatures from "./SecurityFeatures";
 import CTA from "./CTA";
+import AliviaProductSections from "./AliviaProductSections";
 
 export default function LandingPage() {
   return (
@@ -22,6 +23,7 @@ export default function LandingPage() {
       <main className="isolate">
         <Hero />
         <Clients />
+        <AliviaProductSections />
         <ExamplesCarousel examples={examples} />
         <AIReady />
         <FeaturesGrid features={features} />
