@@ -283,6 +283,21 @@ route ChatRoute { path: "/chat", to: ChatPage }
 page ChatPage {
   component: import ChatPage from "@src/client/pages/ChatPage"
 }
+
+route BountiesRoute { path: "/bounties", to: BountiesPage }
+page BountiesPage {
+  component: import BountiesPage from "@src/client/pages/BountiesPage"
+}
+
+route EleccionesRoute { path: "/elecciones", to: EleccionesPage }
+page EleccionesPage {
+  component: import EleccionesPage from "@src/client/pages/EleccionesPage"
+}
+
+route LicitacionesRoute { path: "/licitaciones", to: LicitacionesPage }
+page LicitacionesPage {
+  component: import LicitacionesPage from "@src/client/pages/LicitacionesPage"
+}
 //#endregion
 
 //#region File Upload

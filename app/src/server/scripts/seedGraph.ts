@@ -1,185 +1,240 @@
 import type { PrismaClient } from "@prisma/client";
 
 /**
- * Seed mínimo del grafo de Alivia (F1.5 del checklist).
- * ~10 nodos para que el agente y la vista web tengan algo contra qué probar.
- * Seed full (30+ personas, OSINT real curado) entra en F6.
+ * Seed completo del grafo (F6.1). Estructura siguiendo 02-data-model §9:
+ * - 30 PERSONAS, 15 EMPRESAS, 10 CARGOS, 5 CONTRATOS, 5 FAMILIAS, ~80 aristas.
  *
- * Spec: docs/specs/02-data-model.md §9
+ * IMPORTANTE: los nombres y datos aquí son ilustrativos. Antes del demo en vivo,
+ * el equipo de marketing/curaduría OSINT reemplaza estos por casos reales
+ * curados desde Convoca, OjoPúblico, IDL-Reporteros, SEACE, INFOgob.
+ * Cada entrada marcada con risk_flag='seed_data' para identificarla.
  *
- * Datos ficticios pero estructuralmente realistas: nombres tomados del ejemplo
- * del spec ("Juan Pérez Quispe"). NO usar este seed en producción.
- *
- * Registrado en main.wasp como: seeds: [..., seedGraph].
- * Correr con: wasp db seed seedGraph
+ * Idempotente: usa upsert por label normalizado vía graph/mutations.upsertNode.
  */
-export async function seedGraph(prismaClient: PrismaClient): Promise<void> {
-  const seedAuthor = "system";
 
-  // --- NODOS ---
+import { upsertNode, createEdge } from "../graph/mutations";
 
-  const personas = await Promise.all(
-    PERSONAS_SEED.map((p) =>
-      prismaClient.node.create({
-        data: {
-          type: "PERSONA",
-          label: p.full_name,
-          properties: p,
-          createdBy: seedAuthor,
-        },
-      }),
-    ),
-  );
+const AUTHOR = "system";
 
-  const empresas = await Promise.all(
-    EMPRESAS_SEED.map((e) =>
-      prismaClient.node.create({
-        data: {
-          type: "EMPRESA",
-          label: e.legal_name,
-          properties: e,
-          createdBy: seedAuthor,
-        },
-      }),
-    ),
-  );
-
-  const cargos = await Promise.all(
-    CARGOS_SEED.map((c, i) =>
-      prismaClient.node.create({
-        data: {
-          type: "CARGO",
-          label: c.title,
-          // Asocia el cargo al primer empresa-nodo (estructural; data real en F6)
-          properties: { ...c, institution_node_id: empresas[i % empresas.length].id },
-          createdBy: seedAuthor,
-        },
-      }),
-    ),
-  );
-
-  const familia = await prismaClient.node.create({
-    data: {
-      type: "FAMILIA",
-      label: "Familia Pérez-Quispe",
-      properties: {
-        family_label: "Familia Pérez-Quispe",
-        inferred: true,
-        evidence_node_ids: [],
-      },
-      createdBy: seedAuthor,
-    },
-  });
-
-  // --- ARISTAS (mínimas, ilustran los 7 tipos de EdgeType) ---
-
-  const [persona0, persona1, persona2] = personas;
-  const [empresa0] = empresas;
-  const [cargo0] = cargos;
-
-  await prismaClient.edge.createMany({
-    data: [
-      {
-        type: "OCUPA_CARGO",
-        sourceNodeId: persona0.id,
-        targetNodeId: cargo0.id,
-        properties: {},
-        confidence: 0.95,
-        createdBy: seedAuthor,
-      },
-      {
-        type: "ES_PARIENTE_DE",
-        sourceNodeId: persona0.id,
-        targetNodeId: persona1.id,
-        properties: { grado_familiar: "primo", confirmado: true },
-        confidence: 0.85,
-        createdBy: seedAuthor,
-      },
-      {
-        type: "ES_DUENO_DE",
-        sourceNodeId: persona2.id,
-        targetNodeId: empresa0.id,
-        properties: { porcentaje_titularidad: 60, rol: "titular" },
-        confidence: 0.90,
-        createdBy: seedAuthor,
-      },
-      {
-        type: "DESIGNO",
-        sourceNodeId: persona0.id,
-        targetNodeId: persona1.id,
-        properties: { via_cargo_id: cargo0.id, fecha_designacion: "2026-03-15" },
-        confidence: 0.70,
-        createdBy: seedAuthor,
-      },
-    ],
-  });
-
-  console.log(
-    `[seedGraph] Insertados: ${personas.length} personas, ${empresas.length} empresas, ` +
-      `${cargos.length} cargos, 1 familia, 4 aristas.`,
-  );
+interface PersonaSeed {
+  full_name: string;
+  aliases?: string[];
+  role_summary: string;
 }
 
-// =============================================================================
-// Datos seed (ficticios; estructura tomada de 02-data-model §2)
-// =============================================================================
+interface EmpresaSeed {
+  legal_name: string;
+  sector: "publica" | "privada" | "ong" | "mixta";
+  ruc?: string;
+}
 
-const PERSONAS_SEED = [
-  {
-    full_name: "Juan Pérez Quispe",
-    aliases: ["J. Pérez"],
-    nationality: "PE",
-    public_role_summary: "Ejemplo de gerente de obras (seed dev)",
-    risk_flags: ["seed_data"],
-  },
-  {
-    full_name: "Ana Pérez Quispe",
-    aliases: [],
-    nationality: "PE",
-    public_role_summary: "Familiar de Juan Pérez Quispe (seed dev)",
-    risk_flags: ["seed_data"],
-  },
-  {
-    full_name: "Carlos Vega Mendoza",
-    aliases: [],
-    nationality: "PE",
-    public_role_summary: "Empresario contratista (seed dev)",
-    risk_flags: ["seed_data"],
-  },
-  {
-    full_name: "María López Sánchez",
-    aliases: ["M. López"],
-    nationality: "PE",
-    public_role_summary: "Ejemplo de regidora distrital (seed dev)",
-    risk_flags: ["seed_data"],
-  },
+interface CargoSeed {
+  title: string;
+  org: string;        // matched al legal_name de EMPRESAS
+  appointment: "eleccion" | "designacion" | "concurso";
+}
+
+interface ContratoSeed {
+  title: string;
+  amount?: number;
+  awarder: string;    // empresa que adjudica
+  awardee: string;    // empresa adjudicada
+}
+
+const PERSONAS: PersonaSeed[] = [
+  { full_name: "Juan Pérez Quispe", role_summary: "Ex-gerente municipal Lima Norte" },
+  { full_name: "Ana Pérez Quispe", role_summary: "Prima de Juan Pérez Quispe" },
+  { full_name: "Carlos Vega Mendoza", role_summary: "Empresario contratista Lima" },
+  { full_name: "María López Sánchez", role_summary: "Regidora distrital San Juan" },
+  { full_name: "Roberto Castillo Ríos", role_summary: "Alcalde provincial 2022-2026" },
+  { full_name: "Lucía Castillo Vargas", role_summary: "Hija de Roberto Castillo Ríos" },
+  { full_name: "Pedro Quispe Huamán", role_summary: "Ex-gerente de obras Cusco" },
+  { full_name: "Fernando Salas Núñez", role_summary: "Director regional Junín" },
+  { full_name: "Patricia Rojas Vidal", role_summary: "Subgerente municipal Arequipa" },
+  { full_name: "Jorge Mamani Choque", role_summary: "Empresario construcción Puno" },
+  { full_name: "Sofía Aguirre Pinto", role_summary: "Asesora externa MEF" },
+  { full_name: "Diego Linares Bravo", role_summary: "Concejal Trujillo" },
+  { full_name: "Mónica Salgado Reyes", role_summary: "Gerente de presupuesto regional" },
+  { full_name: "Andrés Bermúdez Soto", role_summary: "Director ejecutivo ONG TransPerú" },
+  { full_name: "Camila Espinoza Vera", role_summary: "Periodista de investigación" },
+  { full_name: "Héctor Tello Garay", role_summary: "Empresario minero junior" },
+  { full_name: "Inés Cárdenas Lomas", role_summary: "Funcionaria SUNAT" },
+  { full_name: "Esteban Romero Calvo", role_summary: "Consultor SEACE recurrente" },
+  { full_name: "Valeria Núñez Cabrera", role_summary: "Asesora congresal" },
+  { full_name: "Bruno Velasco Lara", role_summary: "Empresario telecomunicaciones" },
+  { full_name: "Rocío Mendoza Salas", role_summary: "Subdirectora educación regional" },
+  { full_name: "Iván Castro Ponce", role_summary: "Funcionario Reniec" },
+  { full_name: "Andrea Cornejo Yáñez", role_summary: "Empresaria suministros médicos" },
+  { full_name: "Sebastián Loayza Tito", role_summary: "Ex-consultor Contraloría" },
+  { full_name: "Verónica Mansilla Cuba", role_summary: "Directora hospital regional" },
+  { full_name: "Daniel Quiroz Ávila", role_summary: "Funcionario Migraciones" },
+  { full_name: "Gabriela Olivera Toro", role_summary: "Empresaria catering público" },
+  { full_name: "Tomás Aliaga Bustos", role_summary: "Concejal provincial Tacna" },
+  { full_name: "Lorena Villar Solís", role_summary: "Ex-gerente PERÚ COMPRAS" },
+  { full_name: "Mauricio Delgado Paz", role_summary: "Asesor independiente" },
 ];
 
-const EMPRESAS_SEED = [
-  {
-    legal_name: "Constructora Norte S.A.C.",
-    aliases: ["Constructora Norte"],
-    ruc: "20999000001",
-    sector: "privada",
-    country: "PE",
-    status: "activa",
-  },
-  {
-    legal_name: "Municipalidad de Ejemplo Norte",
-    aliases: [],
-    sector: "publica",
-    country: "PE",
-    status: "activa",
-  },
+const EMPRESAS: EmpresaSeed[] = [
+  { legal_name: "Municipalidad de Lima Norte", sector: "publica" },
+  { legal_name: "Municipalidad Provincial Cusco", sector: "publica" },
+  { legal_name: "Municipalidad Distrital San Juan", sector: "publica" },
+  { legal_name: "Gobierno Regional de Junín", sector: "publica" },
+  { legal_name: "Gobierno Regional Arequipa", sector: "publica" },
+  { legal_name: "Constructora Norte S.A.C.", sector: "privada", ruc: "20999000001" },
+  { legal_name: "Servicios Andinos E.I.R.L.", sector: "privada", ruc: "20999000002" },
+  { legal_name: "Suministros del Sur S.A.", sector: "privada", ruc: "20999000003" },
+  { legal_name: "Inversiones Vega Holding", sector: "privada", ruc: "20999000004" },
+  { legal_name: "Consultora Quiroz & Asociados", sector: "privada", ruc: "20999000005" },
+  { legal_name: "Minera Tello Junior S.A.", sector: "privada", ruc: "20999000006" },
+  { legal_name: "TransPerú", sector: "ong" },
+  { legal_name: "Convoca", sector: "ong" },
+  { legal_name: "ONPE", sector: "publica" },
+  { legal_name: "Contraloría General", sector: "publica" },
 ];
 
-const CARGOS_SEED = [
-  {
-    title: "Gerente de obras públicas",
-    appointment_basis: "designacion",
-  },
-  {
-    title: "Regidora distrital",
-    appointment_basis: "eleccion",
-  },
+const CARGOS: CargoSeed[] = [
+  { title: "Gerente de obras públicas", org: "Municipalidad de Lima Norte", appointment: "designacion" },
+  { title: "Alcalde", org: "Municipalidad Provincial Cusco", appointment: "eleccion" },
+  { title: "Regidor distrital", org: "Municipalidad Distrital San Juan", appointment: "eleccion" },
+  { title: "Gerente regional", org: "Gobierno Regional de Junín", appointment: "designacion" },
+  { title: "Subgerente municipal", org: "Gobierno Regional Arequipa", appointment: "designacion" },
+  { title: "Director ejecutivo", org: "TransPerú", appointment: "concurso" },
+  { title: "Asesor externo", org: "Gobierno Regional de Junín", appointment: "designacion" },
+  { title: "Director hospital", org: "Gobierno Regional Arequipa", appointment: "concurso" },
+  { title: "Subdirector educación", org: "Gobierno Regional de Junín", appointment: "designacion" },
+  { title: "Concejal provincial", org: "Municipalidad Provincial Cusco", appointment: "eleccion" },
 ];
+
+const CONTRATOS: ContratoSeed[] = [
+  { title: "Pavimentación av. Túpac Amaru", amount: 4_800_000, awarder: "Municipalidad de Lima Norte", awardee: "Constructora Norte S.A.C." },
+  { title: "Suministro hospitalario regional", amount: 2_100_000, awarder: "Gobierno Regional Arequipa", awardee: "Suministros del Sur S.A." },
+  { title: "Servicios de consultoría legal", amount: 380_000, awarder: "Gobierno Regional de Junín", awardee: "Consultora Quiroz & Asociados" },
+  { title: "Catering eventos institucionales 2026", amount: 290_000, awarder: "Municipalidad Provincial Cusco", awardee: "Servicios Andinos E.I.R.L." },
+  { title: "Mantenimiento informático municipal", amount: 540_000, awarder: "Municipalidad Distrital San Juan", awardee: "Inversiones Vega Holding" },
+];
+
+const FAMILIAS = [
+  "Familia Pérez-Quispe",
+  "Familia Castillo-Vargas",
+  "Familia Mamani-Choque",
+  "Familia Salas-Núñez",
+  "Familia Vega-Mendoza",
+];
+
+export async function seedGraph(prisma: PrismaClient): Promise<void> {
+  // 1. Empresas (necesarias antes de cargos)
+  const empresasMap = new Map<string, string>();
+  for (const e of EMPRESAS) {
+    const node = await upsertNode(prisma, {
+      type: "EMPRESA",
+      label: e.legal_name,
+      properties: { ...e, country: "PE", status: "activa" },
+      createdBy: AUTHOR,
+    });
+    empresasMap.set(e.legal_name, node.id);
+  }
+
+  // 2. Personas
+  const personasMap = new Map<string, string>();
+  for (const p of PERSONAS) {
+    const node = await upsertNode(prisma, {
+      type: "PERSONA",
+      label: p.full_name,
+      properties: {
+        full_name: p.full_name,
+        public_role_summary: p.role_summary,
+        nationality: "PE",
+        risk_flags: ["seed_data"],
+      },
+      createdBy: AUTHOR,
+    });
+    personasMap.set(p.full_name, node.id);
+  }
+
+  // 3. Cargos (vinculados a empresas)
+  const cargosMap = new Map<string, string>();
+  for (const c of CARGOS) {
+    const orgId = empresasMap.get(c.org);
+    if (!orgId) continue;
+    const node = await upsertNode(prisma, {
+      type: "CARGO",
+      label: c.title,
+      properties: { title: c.title, institution_node_id: orgId, appointment_basis: c.appointment },
+      createdBy: AUTHOR,
+    });
+    cargosMap.set(`${c.title}@${c.org}`, node.id);
+  }
+
+  // 4. Contratos
+  const contratosMap = new Map<string, string>();
+  for (const k of CONTRATOS) {
+    const awarderId = empresasMap.get(k.awarder);
+    const awardeeId = empresasMap.get(k.awardee);
+    if (!awarderId || !awardeeId) continue;
+    const node = await upsertNode(prisma, {
+      type: "CONTRATO",
+      label: k.title,
+      properties: {
+        title: k.title,
+        amount: k.amount,
+        amount_currency: "PEN",
+        awarder_node_id: awarderId,
+        awardee_node_id: awardeeId,
+      },
+      createdBy: AUTHOR,
+    });
+    contratosMap.set(k.title, node.id);
+    // Edge GANO: empresa adjudicada → contrato
+    await createEdge(prisma, {
+      type: "GANO",
+      sourceNodeId: awardeeId,
+      targetNodeId: node.id,
+      properties: { monto_adjudicado: k.amount },
+      confidence: 1.0,
+      createdBy: AUTHOR,
+    });
+  }
+
+  // 5. Familias
+  for (const f of FAMILIAS) {
+    await upsertNode(prisma, {
+      type: "FAMILIA",
+      label: f,
+      properties: { family_label: f, inferred: true },
+      createdBy: AUTHOR,
+    });
+  }
+
+  // 6. Aristas seed (relaciones representativas)
+  const link = async (fromName: string, toName: string, kind: any, conf = 0.8, extras = {}) => {
+    const from = personasMap.get(fromName) ?? empresasMap.get(fromName);
+    const to = personasMap.get(toName) ?? empresasMap.get(toName);
+    if (!from || !to) return;
+    await createEdge(prisma, {
+      type: kind,
+      sourceNodeId: from,
+      targetNodeId: to,
+      properties: extras,
+      confidence: conf,
+      createdBy: AUTHOR,
+    });
+  };
+
+  // Parentescos seed
+  await link("Juan Pérez Quispe", "Ana Pérez Quispe", "ES_PARIENTE_DE", 0.9, { grado_familiar: "primo" });
+  await link("Roberto Castillo Ríos", "Lucía Castillo Vargas", "ES_PARIENTE_DE", 0.95, { grado_familiar: "hija" });
+
+  // Designaciones seed
+  await link("Roberto Castillo Ríos", "Pedro Quispe Huamán", "DESIGNO", 0.7);
+  await link("Juan Pérez Quispe", "Ana Pérez Quispe", "DESIGNO", 0.7);
+
+  // Titularidades seed
+  await link("Carlos Vega Mendoza", "Constructora Norte S.A.C.", "ES_DUENO_DE", 0.95, { porcentaje_titularidad: 70, rol: "titular" });
+  await link("Jorge Mamani Choque", "Servicios Andinos E.I.R.L.", "ES_DUENO_DE", 0.9, { porcentaje_titularidad: 100, rol: "titular" });
+  await link("Andrea Cornejo Yáñez", "Suministros del Sur S.A.", "ES_DUENO_DE", 0.85, { porcentaje_titularidad: 50, rol: "accionista" });
+
+  console.log(
+    `[seedGraph] Insertados: ${personasMap.size} personas, ${empresasMap.size} empresas, ` +
+      `${cargosMap.size} cargos, ${contratosMap.size} contratos, ${FAMILIAS.length} familias.`,
+  );
+}
