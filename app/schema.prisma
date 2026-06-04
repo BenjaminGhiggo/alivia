@@ -176,3 +176,86 @@ model Edge {
   @@index([sourceNodeId])
   @@index([targetNodeId])
 }
+
+/// Unidad de aporte ciudadano que cristaliza un señalamiento. Spec 02 §4.
+/// El id tiene formato `alv-YYYY-MM-DD-NNNN`.
+model Case {
+  id                  String    @id
+  caseType            String              // nepotismo | licitacion | electoral | otro
+  subjectNodeId       String
+  facts               Json                // string[] de hechos
+  evidence            Json                // {type, value}[] de evidencias inline
+  graphConnections    Json                // {node_id, relation, confidence}[]
+  corroborationScore  Float
+  reporterPseudonym   String
+  status              String              // watchlist | published | archived | refuted
+  evidenceHash        String
+  nftTokenId          String?
+  nftTxHash           String?
+  createdAt           DateTime  @default(now())
+  publishedAt         DateTime?
+
+  subject             Node      @relation(fields: [subjectNodeId], references: [id])
+
+  @@index([status])
+  @@index([reporterPseudonym])
+  @@index([subjectNodeId])
+}
+
+/// Aportante seudónimo. Lleva reputación on-chain (NFT-Aportante soulbound).
+/// Sin PII. Spec 02 §5.1.
+model Contributor {
+  pseudonym            String    @id     // formato aportante-XXXX
+  soulboundTokenId     String?
+  trustScore           Float     @default(0.5)
+  totalContributions   Int       @default(0)
+  totalCorroborated    Int       @default(0)
+  firstSeenAt          DateTime  @default(now())
+  lastSeenAt           DateTime  @default(now())
+}
+
+/// Evidencia individual referenciable por casos. Spec 02 §5.2.
+model Evidence {
+  id            String    @id @default(cuid())
+  type          String              // link | image | document_reference | expediente | audio | video
+  value         String              // URL o referencia
+  contentHash   String              // sha256
+  contributedBy String              // pseudónimo del aportante
+  verified      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+
+  @@index([contributedBy])
+}
+
+/// Cazarrecompensa con TSYS bloqueados. Spec 02 §5.3 + 03 caso 3.
+model Bounty {
+  id                String    @id @default(cuid())
+  targetNodeId      String              // node objetivo (persona/empresa/caso)
+  description       String
+  amountTsys        Float
+  nftBountyTokenId  String?
+  status            String    @default("open")  // open | claimed | expired | cancelled
+  claimCriteria     String
+  postedBy          String              // pseudónimo del postor
+  claimedBy         String?             // pseudónimo del claimer
+  postedAt          DateTime  @default(now())
+  claimedAt         DateTime?
+
+  @@index([status])
+  @@index([targetNodeId])
+}
+
+/// Estado de conversación con el agente, persistido entre turnos. 07.F2.6.
+/// `state` carga el contexto del aporte parcial mientras el agente entrevista.
+model ChatSession {
+  id            String    @id @default(cuid())
+  channel       String              // telegram | discord | web
+  channelUserId String              // hash del id externo, NO PII
+  pseudonym     String              // aportante-XXXX asignado a la sesión
+  state         Json                // {intent, partialCase, turnCount, ...}
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([channel, channelUserId])
+  @@index([pseudonym])
+}
