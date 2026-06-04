@@ -39,9 +39,9 @@ export default defineConfig({
           ],
         },
         {
-          label: "Operaciones",
+          label: "Probar Alivia",
           items: [
-            { label: "QA · Checklist de demo", link: "/qa-checklist/" },
+            { label: "Casos de uso para probar", link: "/qa-checklist/" },
           ],
         },
       ],
