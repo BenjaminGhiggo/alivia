@@ -1,6 +1,5 @@
-import { Link as WaspRouterLink, routes } from "wasp/client/router";
 import { Button } from "../../client/components/ui/button";
-import { Link2, Bot, Lock, BarChart3 } from "lucide-react";
+import { MessageCircle, Network, FileCheck, Shield } from "lucide-react";
 import CrystalIcon from "../CrystalIcon";
 
 export default function Hero() {
@@ -13,25 +12,28 @@ export default function Hero() {
           <div className="lg:mb-18 mx-auto max-w-4xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
               <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-              Votación digital sobre Blockchain
+              Memoria pública anti-corrupción · Syscoin
             </div>
             <h1 className="text-foreground text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
-              El futuro del voto digital,{" "}
-              <span className="text-gradient-primary">seguro y transparente</span>
+              Tú das la pista.{" "}
+              <span className="text-gradient-primary">Alivia conecta los puntos.</span>{" "}
+              La blockchain lo recuerda.
             </h1>
             <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-sm leading-7 sm:mt-6 sm:text-base md:text-lg md:leading-8">
-              Plataforma de votación digital con Blockchain e Inteligencia Artificial.
-              Cada voto es inmutable, verificable y auditable en tiempo real.
+              Agente IA en Telegram y Discord que recibe pistas ciudadanas de corrupción,
+              construye un grafo público de personas, cargos, empresas y vínculos, y sella
+              cada caso como NFT-Acta en Syscoin. Anonimato por defecto, lenguaje claro,
+              cero veredictos.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-x-6">
               <Button size="lg" variant="default" asChild>
-                <a href="/contact">
-                  Solicitar Demo <span aria-hidden="true">→</span>
+                <a href="https://t.me/alivia_sbs_bot" target="_blank" rel="noopener noreferrer">
+                  Hablar con Alivia en Telegram <span aria-hidden="true">→</span>
                 </a>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <a href="#how-it-works">
-                  Ver cómo funciona
+                <a href="/grafo">
+                  Ver el grafo en vivo
                 </a>
               </Button>
             </div>
@@ -41,10 +43,10 @@ export default function Hero() {
               <div className="w-full max-w-4xl rounded-xl border border-border/40 bg-gradient-to-br from-amber-50 to-purple-50 p-4 sm:p-6 md:p-8 dark:from-amber-950/50 dark:to-purple-950/50">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-6">
                     {[
-                    { icon: <CrystalIcon color="#f59e0b"><Link2 className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Registro en Blockchain", detail: "Syscoin NEVM" },
-                    { icon: <CrystalIcon color="#a855f7"><Bot className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Verificación con IA", detail: "Tiempo real" },
-                    { icon: <CrystalIcon color="#00d2ff"><Lock className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Cifrado E2E", detail: "Grado militar" },
-                    { icon: <CrystalIcon color="#34d399"><BarChart3 className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Resultados", detail: "Instantáneos" },
+                    { icon: <CrystalIcon color="#f59e0b"><MessageCircle className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Entrevista", detail: "Telegram & Discord" },
+                    { icon: <CrystalIcon color="#a855f7"><Network className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Grafo público", detail: "Vínculos visibles" },
+                    { icon: <CrystalIcon color="#00d2ff"><FileCheck className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "NFT-Acta", detail: "Syscoin Tanenbaum" },
+                    { icon: <CrystalIcon color="#34d399"><Shield className="h-6 w-6 stroke-[var(--color-glow)]" /></CrystalIcon>, label: "Anonimato", detail: "Sin PII" },
                   ].map((item, i) => (
                     <div key={i} className="flex flex-col items-center gap-2 rounded-lg bg-white/60 p-4 dark:bg-white/5">
                       <div className="text-amber-600 dark:text-amber-400">{item.icon}</div>
@@ -55,7 +57,7 @@ export default function Hero() {
                 </div>
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground sm:mt-6 sm:text-sm">
                   <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  Powered by Syscoin &mdash; Seguridad de Bitcoin, velocidad de Ethereum
+                  Powered by Syscoin &mdash; la corrupción solo se sostiene en el olvido
                 </div>
               </div>
             </div>

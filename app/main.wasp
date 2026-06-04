@@ -3,22 +3,22 @@ app OpenSaaS {
     version: "^0.23.0"
   },
 
-  title: "ALIVIA - Votación Digital con Blockchain",
+  title: "ALIVIA · Memoria pública anti-corrupción para LatAm",
 
   head: [
     "<link rel='icon' type='image/svg+xml' href='/favicon.svg' />",
     "<link rel='icon' href='/favicon.ico' />",
     "<link rel='apple-touch-icon' href='/favicon.svg' />",
 
-    "<meta name='description' content='Plataforma de votación digital con Blockchain e Inteligencia Artificial. Cada voto es inmutable, verificable y auditable en tiempo real.' />",
+    "<meta name='description' content='Agente IA en Telegram y Discord que recibe pistas ciudadanas de corrupción, construye un grafo público de vínculos y las sella como NFT en Syscoin. Memoria que no se compra ni se borra.' />",
     "<meta name='author' content='ALIVIA' />",
-    "<meta name='keywords' content='votación digital, blockchain, syscoin, inteligencia artificial, voto seguro, transparencia electoral, govtech' />",
+    "<meta name='keywords' content='anti corrupcion, latam, peru, syscoin, blockchain, inteligencia ciudadana, grafo, NFT, transparencia, periodismo de investigacion' />",
 
     "<meta property='og:type' content='website' />",
-    "<meta property='og:title' content='ALIVIA - Votación Digital con Blockchain' />",
+    "<meta property='og:title' content='ALIVIA · Memoria pública anti-corrupción' />",
     "<meta property='og:site_name' content='ALIVIA' />",
     "<meta property='og:url' content='https://alivia.sbs' />",
-    "<meta property='og:description' content='Plataforma de votación digital con Blockchain e Inteligencia Artificial. Segura, transparente y auditable.' />",
+    "<meta property='og:description' content='Tú das la pista. Alivia conecta los puntos. La blockchain lo recuerda.' />",
     "<meta property='og:image' content='https://alivia.sbs/public-banner.webp' />",
     "<meta name='twitter:image' content='https://alivia.sbs/public-banner.webp' />",
     "<meta name='twitter:image:width' content='800' />",
