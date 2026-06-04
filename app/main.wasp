@@ -224,6 +224,22 @@ api paymentsWebhook {
   middlewareConfigFn: import { paymentsMiddlewareConfigFn } from "@src/payment/webhook",
   httpRoute: (POST, "/payments-webhook")
 }
+
+// =============================================================================
+// ALIVIA — API endpoints para bots y healthcheck
+// Spec: docs/specs/05-architecture.md §3.1 + 06-demo-acceptance §4.1.
+// =============================================================================
+
+api agentTurn {
+  fn: import { agentTurn } from "@src/server/api/agentTurn",
+  entities: [ChatSession, Node, Edge, Case, Contributor, Evidence],
+  httpRoute: (POST, "/api/agent/turn")
+}
+
+api healthz {
+  fn: import { healthz } from "@src/server/api/healthz",
+  httpRoute: (GET, "/healthz")
+}
 //#endregion
 
 //#region File Upload

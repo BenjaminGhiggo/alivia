@@ -1,0 +1,19 @@
+{
+  "name": "alivia-bot-telegram",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bot Telegram (@AliviaBot) — adapter a /api/agent/turn",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx index.ts",
+    "dev": "tsx --watch index.ts"
+  },
+  "dependencies": {
+    "grammy": "^1.30.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  }
+}
