@@ -29,12 +29,12 @@
 
 ## Fases
 
-### F0 — Setup + Voz (T0–T2) [0/4]
+### F0 — Setup + Voz (T0–T2) [4/4] ✅
 
-- [ ] **0.1** Branch `dev` al día con `main`. Workflow `SB-N-vK` activo (ver [CLAUDE.md → Flujo Git](../../CLAUDE.md)).
-- [ ] **0.2** `LICENSE` MIT en la raíz del repo. Repo público en GitHub.
-- [ ] **0.3** Verificar `docs/SOUL.md` y `docs/instinct.md` commiteados.
-- [ ] **0.4** Compilar system prompt del agente desde `instinct.md` + R1–R10 de `01-agent-behavior §8` → `app/src/server/agent/prompts/alivia-system.es.md`.
+- [x] **0.1** Branch `dev` al día con `main`. Workflow `SB-N-vK` activo (ver [CLAUDE.md → Flujo Git](../../CLAUDE.md)).
+- [x] **0.2** `LICENSE` MIT en la raíz del repo. Repo público en GitHub.
+- [x] **0.3** Verificar `docs/SOUL.md` y `docs/instinct.md` commiteados.
+- [x] **0.4** Compilar system prompt del agente desde `instinct.md` + R1–R10 de `01-agent-behavior §8` → `app/src/server/agent/prompts/alivia-system.es.md`.
 
 **Demo gate:** repo público con LICENSE; voz del agente lista en disco para inyectar al LLM.
 
@@ -178,7 +178,7 @@ Ver [06-demo-acceptance §11](06-demo-acceptance.md). Cada uno toma uno o más r
 ## Estado global
 
 ```
-F0 — Setup + Voz                      [░░░░░░░░░░] 0/4
+F0 — Setup + Voz                      [██████████] 4/4 ✅
 F1 — Schema + Migración + Seed        [░░░░░░░░░░] 0/5
 F2 — Agente + Router + Tools          [░░░░░░░░░░] 0/8
 F3 — Bots Telegram + Discord          [░░░░░░░░░░] 0/6
