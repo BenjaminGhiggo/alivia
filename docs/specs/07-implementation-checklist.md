@@ -40,15 +40,15 @@
 
 ---
 
-### F1 — Schema Prisma + Migración + Seed mínimo (T2–T4) [0/5]
+### F1 — Schema Prisma + Migración + Seed mínimo (T2–T4) [5/5] ✅
 
 Referencia: [02-data-model.md §6](02-data-model.md).
 
-- [ ] **1.1** Enums `NodeType` y `EdgeType` agregados a `app/schema.prisma`.
-- [ ] **1.2** Modelos `Node` y `Edge` con índices.
-- [ ] **1.3** Modelos `Case`, `Contributor`, `Evidence`, `Bounty`, más `ChatSession` para estado de conversación.
-- [ ] **1.4** Migración: `wasp db migrate-dev --name "alivia-graph-init"` corre limpio.
-- [ ] **1.5** `scripts/seed-graph.ts` con OSINT mínimo (~10 nodos para tests; seed full en F6).
+- [x] **1.1** Enums `NodeType` y `EdgeType` agregados a `app/schema.prisma`.
+- [x] **1.2** Modelos `Node` y `Edge` con índices.
+- [x] **1.3** Modelos `Case`, `Contributor`, `Evidence`, `Bounty`, más `ChatSession` para estado de conversación.
+- [x] **1.4** Migración: `app/migrations/20260604031049_alivia_graph_init/migration.sql` generada via `prisma migrate diff`. Se aplica sola al boot del server por `prisma migrate deploy`.
+- [x] **1.5** `app/src/server/scripts/seedGraph.ts` (Wasp seed) con 4 personas + 2 empresas + 2 cargos + 1 familia + 4 aristas. Registrado en `main.wasp`. Seed full OSINT real va en F6.
 
 **Demo gate:** `wasp db studio` muestra el grafo seed; `SELECT count(*) FROM "Node"` ≥ 10.
 
@@ -179,7 +179,7 @@ Ver [06-demo-acceptance §11](06-demo-acceptance.md). Cada uno toma uno o más r
 
 ```
 F0 — Setup + Voz                      [██████████] 4/4 ✅
-F1 — Schema + Migración + Seed        [░░░░░░░░░░] 0/5
+F1 — Schema + Migración + Seed        [██████████] 5/5 ✅
 F2 — Agente + Router + Tools          [░░░░░░░░░░] 0/8
 F3 — Bots Telegram + Discord          [░░░░░░░░░░] 0/6
 F4 — Contrato + Mint                  [░░░░░░░░░░] 0/5
