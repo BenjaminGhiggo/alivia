@@ -21,7 +21,7 @@ const techSpecs: TechSpec[] = [
   { label: "Finality time", value: "~5 segundos", icon: <CrystalIcon color={iconColors.shield} size="sm"><Shield className="h-4 w-4 stroke-[var(--color-glow)]" /></CrystalIcon> },
 ];
 
-const flowSteps = ["Voto", "Cifrado", "Smart Contract", "Bloque", "Verificación"];
+const flowSteps = ["Aporte", "Validación", "Grafo", "NFT-Acta", "Consulta"];
 
 export default function BlockchainSection() {
   return (
@@ -48,7 +48,7 @@ export default function BlockchainSection() {
               <div>
                 <strong className="text-foreground">Bajo costo, alta velocidad</strong>
                 <p className="text-sm text-muted-foreground">
-                  Transacciones por centavos con confirmación en segundos, ideal para procesos electorales masivos.
+                  Transacciones por centavos con confirmación en segundos, ideal para sellar señalamientos ciudadanos sin barreras.
                 </p>
               </div>
             </li>
@@ -72,7 +72,7 @@ export default function BlockchainSection() {
           </a>
         </div>
         <div>
-          <h3 className="mb-4 text-xl font-bold text-foreground sm:mb-6 sm:text-2xl">Flujo de la votación</h3>
+          <h3 className="mb-4 text-xl font-bold text-foreground sm:mb-6 sm:text-2xl">Flujo del aporte</h3>
           <div className="flex flex-wrap items-center gap-2">
             {flowSteps.map((step, i) => (
               <div key={step} className="flex items-center gap-2">
