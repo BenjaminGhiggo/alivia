@@ -75,7 +75,7 @@ Referencias: [01-agent-behavior](01-agent-behavior.md), [05-architecture §3.2�
 
 Referencia: [05-architecture §3.1](05-architecture.md).
 
-- [ ] **3.1** (manual del equipo) Crear `@AliviaBot` en BotFather, copiar `TELEGRAM_BOT_TOKEN` a `.env.server`.
+- [ ] **3.1** (manual del equipo) Crear `@alivia_sbs_bot` en BotFather, copiar `TELEGRAM_BOT_TOKEN` a `.env.server`.
 - [x] **3.2** `bots/telegram/index.ts` con `grammy` + `tsx` runtime + tsconfig. Llama `POST /api/agent/turn` con `channel: "telegram"`. Comandos `/start` y `/help` + handler `message:text`.
 - [ ] **3.3** (manual del equipo) Crear app Discord, invitar al server, copiar `DISCORD_BOT_TOKEN/CLIENT_ID/GUILD_ID`. Luego correr `cd bots/discord && npm install && npm run register`.
 - [x] **3.4** `bots/discord/index.ts` con `discord.js` v14 + `register-commands.ts` para registrar `/preguntar`. Slash command + handler de DMs.
