@@ -64,8 +64,8 @@ Referencias: [01-agent-behavior](01-agent-behavior.md), [05-architecture §3.2�
 - [ ] **2.4** `app/src/server/graph/queries.ts` — consultas críticas de 02 §7.
 - [ ] **2.5** `app/src/server/graph/mutations.ts` — upsert Node/Edge/Case con dedup soft (02 §8).
 - [ ] **2.6** Persistencia del estado de la conversación por `chat_session_id`.
-- [ ] **2.7** **(demo-critical, test-first)** Unit test del cálculo `corroboration_score` (fórmula 01 §7).
-- [ ] **2.8** **(demo-critical, test-first)** Unit test del schema JSON del aporte vs `01-agent-behavior §6`.
+- [x] **2.7** **(demo-critical, test-first)** Unit test del cálculo `corroboration_score` (fórmula 01 §7). Implementación: `app/src/server/agent/_score.ts`. Tests: `_score.test.ts` (11 casos: límites, caps, umbral publish, umbral highlight, inputs negativos).
+- [x] **2.8** **(demo-critical, test-first)** Unit test del schema JSON del aporte vs `01-agent-behavior §6`. Implementación: `_schema.ts` (Zod). Tests: `_schema.test.ts` (11 casos: case_id regex, case_type enum, evidence types, score bounds, pseudónimo, ISO datetime, hash hex).
 
 **Demo gate:** integration test mockeado: mensaje → router → agente → tools → `Case` con status `published` y `nft_token_id = null` (pendiente F4).
 
