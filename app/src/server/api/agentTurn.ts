@@ -1,6 +1,7 @@
-import type { Request, Response } from "express";
-import type { ChatSession, PrismaClient } from "@prisma/client";
-import { runAgentTurn, type AgentDeps, type AgentTurnOutput } from "../agent/alivia";
+import type { ChatSession } from "@prisma/client";
+import type { AgentTurn } from "wasp/server/api";
+import type { PrismaClient } from "@prisma/client";
+import { runAgentTurn, type AgentTurnOutput } from "../agent/alivia";
 import { getOrCreateChatSession, type Channel } from "../agent/chatSession";
 import { getLLMProvider } from "../agent/llm/factory";
 import { getMintActaService } from "../chain/mintActa";
@@ -13,7 +14,7 @@ import type { AporteCase } from "../agent/_schema";
  * para procesar un mensaje. Spec: 05-architecture §3.1.
  *
  * Auth: header X-Alivia-Bot-Token contra env ALIVIA_BOT_SHARED_SECRET.
- * Concurrencia: locks en memoria por chatSessionId (un turno por sesión a la vez).
+ * Concurrencia: locks en memoria por chatSessionId.
  */
 
 interface AgentTurnRequestBody {
@@ -60,8 +61,6 @@ async function mintCaseInBackground(prisma: PrismaClient, aporte: AporteCase): P
   });
 
   const tokenURI = await ipfs.uploadMetadata(metadata);
-
-  // address recipient: vault address (MVP); user wallet integration → post-MVP
   const vault = (process.env.ALIVIA_VAULT_ADDRESS ?? "0x0000000000000000000000000000000000000000") as `0x${string}`;
 
   const result = await mintSvc.mint({
@@ -81,10 +80,10 @@ async function mintCaseInBackground(prisma: PrismaClient, aporte: AporteCase): P
   console.log(`[mint] ${aporte.case_id} → token ${result.tokenId}, tx ${result.txHash}`);
 }
 
-function authorize(req: Request): boolean {
+function authorize(headerValue: string | string[] | undefined): boolean {
   const expected = process.env.ALIVIA_BOT_SHARED_SECRET;
   if (!expected) return process.env.NODE_ENV !== "production"; // dev: permisivo
-  return req.header("X-Alivia-Bot-Token") === expected;
+  return typeof headerValue === "string" && headerValue === expected;
 }
 
 function parseBody(body: unknown): AgentTurnRequestBody | null {
@@ -100,23 +99,41 @@ function parseBody(body: unknown): AgentTurnRequestBody | null {
   };
 }
 
-export const agentTurn = async (req: Request, res: Response, context: { entities: { ChatSession: any }; prisma?: PrismaClient }) => {
-  if (!authorize(req)) {
-    return res.status(401).json({ error: "unauthorized" });
+/**
+ * Construye un objeto que se comporta como PrismaClient para los helpers del
+ * agente (graph/queries, mutations, chatSession). Wasp expone entidades vía
+ * context.entities pero no el client completo — usamos los delegates por
+ * nombre lowercase como hace Prisma.
+ */
+function entitiesAsPrisma(entities: any): PrismaClient {
+  return {
+    node: entities.Node,
+    edge: entities.Edge,
+    case: entities.Case,
+    contributor: entities.Contributor,
+    evidence: entities.Evidence,
+    chatSession: entities.ChatSession,
+  } as unknown as PrismaClient;
+}
+
+export const agentTurn: AgentTurn = async (req, res, context) => {
+  if (!authorize(req.header("X-Alivia-Bot-Token"))) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
   }
 
   const input = parseBody(req.body);
   if (!input) {
-    return res.status(400).json({ error: "invalid body — expected {channel, externalUserId, message}" });
+    res.status(400).json({ error: "invalid body — expected {channel, externalUserId, message}" });
+    return;
   }
 
-  // Wasp inyecta entidades en context; el client de Prisma vive en context.entities[...].$prisma
-  const prisma: PrismaClient = (context as any).entities.ChatSession.$prisma ?? (context as any).prisma;
+  const prisma = entitiesAsPrisma(context.entities);
 
   try {
     const session: ChatSession = await getOrCreateChatSession(prisma, input.channel, input.externalUserId);
 
-    const deps: AgentDeps = { prisma, llm: getLLMProvider() };
+    const deps = { prisma, llm: getLLMProvider() };
     const result = await withLock(session.id, () =>
       runAgentTurn(deps, {
         session,
@@ -125,7 +142,6 @@ export const agentTurn = async (req: Request, res: Response, context: { entities
       }),
     );
 
-    // Fire-and-forget mint si el aporte cristalizó (no bloquea respuesta del bot)
     if (result.caseToMint) {
       mintCaseInBackground(prisma, result.caseToMint).catch((err) => {
         console.error("[agentTurn] mint background error:", err);
@@ -138,10 +154,10 @@ export const agentTurn = async (req: Request, res: Response, context: { entities
       pseudonym: session.pseudonym,
       caseToMint: result.caseToMint,
     };
-    return res.json(response);
+    res.json(response);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[agentTurn] error:", message);
-    return res.status(500).json({ error: "agent_failure", detail: message });
+    res.status(500).json({ error: "agent_failure", detail: message });
   }
 };
