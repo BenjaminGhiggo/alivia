@@ -1,8 +1,9 @@
-import type { Case } from "wasp/entities";
+import type { Case, Contributor } from "wasp/entities";
 import type {
   GetGraphData,
   GetRecentCases,
   GetCaseById,
+  GetAportante,
 } from "wasp/server/operations";
 
 /**
@@ -74,4 +75,73 @@ export const getRecentCases: GetRecentCases<{ limit?: number }, Case[]> = async 
 export const getCaseById: GetCaseById<{ id: string }, Case | null> = async (args, context) => {
   if (!args.id) return null;
   return context.entities.Case.findUnique({ where: { id: args.id } });
+};
+
+export type AportanteProfile = {
+  pseudonym: string;
+  level: number;                // 0..4
+  levelLabel: string;           // Testigo, Vigilante, ...
+  totalContributions: number;
+  totalCorroborated: number;
+  trustScore: number;
+  soulboundTokenId: string | null;
+  firstSeenAt: string;
+  recentCases: { id: string; createdAt: string; status: string; corroborationScore: number }[];
+};
+
+const LEVEL_LABELS = ["Testigo", "Vigilante", "Investigador", "Cronista", "Guardiana"];
+
+function inferLevel(totalContributions: number, totalCorroborated: number): number {
+  const ratio = totalContributions > 0 ? totalCorroborated / totalContributions : 0;
+  if (totalContributions >= 100 && ratio >= 0.75) return 4;
+  if (totalContributions >= 50 && ratio >= 0.70) return 3;
+  if (totalContributions >= 20 && ratio >= 0.60) return 2;
+  if (totalContributions >= 5 && ratio >= 0.50) return 1;
+  return 0;
+}
+
+import type { Bounty } from "wasp/entities";
+
+export const getBounties: import("wasp/server/operations").GetBounties<void, Bounty[]> = async (
+  _args,
+  context,
+) => {
+  return context.entities.Bounty.findMany({
+    orderBy: { postedAt: "desc" },
+    take: 50,
+  });
+};
+
+export const getAportante: GetAportante<{ pseudonym: string }, AportanteProfile | null> = async (
+  args,
+  context,
+) => {
+  if (!args.pseudonym) return null;
+  const c = (await context.entities.Contributor.findUnique({
+    where: { pseudonym: args.pseudonym },
+  })) as Contributor | null;
+  if (!c) return null;
+  const cases = await context.entities.Case.findMany({
+    where: { reporterPseudonym: c.pseudonym },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+    select: { id: true, createdAt: true, status: true, corroborationScore: true },
+  });
+  const level = inferLevel(c.totalContributions, c.totalCorroborated);
+  return {
+    pseudonym: c.pseudonym,
+    level,
+    levelLabel: LEVEL_LABELS[level],
+    totalContributions: c.totalContributions,
+    totalCorroborated: c.totalCorroborated,
+    trustScore: c.trustScore,
+    soulboundTokenId: c.soulboundTokenId,
+    firstSeenAt: c.firstSeenAt.toISOString(),
+    recentCases: cases.map((r) => ({
+      id: r.id,
+      createdAt: r.createdAt.toISOString(),
+      status: r.status,
+      corroborationScore: r.corroborationScore,
+    })),
+  };
 };
