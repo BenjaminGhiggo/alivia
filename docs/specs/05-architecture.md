@@ -262,7 +262,7 @@ alivia.net/
 │   └── migrations/
 │
 ├── bots/
-│   ├── telegram/                 # @AliviaBot
+│   ├── telegram/                 # @alivia_sbs_bot
 │   │   ├── index.ts
 │   │   └── handlers.ts
 │   └── discord/
@@ -325,13 +325,12 @@ DISCORD_BOT_TOKEN=...
 DISCORD_CLIENT_ID=...
 DISCORD_GUILD_ID=...
 
-# Syscoin / zkSYS Testnet — valores oficiales (https://syscoin.org/news/zksys-testnet-launch)
-# Patrones de integración y red de referencia (PoB Devnet de 0xSonata) en CLAUDE.md → "Configuración Syscoin / zkSYS"
-ZKSYS_RPC_URL=https://rpc-test-zk.syscoin.org/
-ZKSYS_CHAIN_ID=5701               # decimal
-ZKSYS_CHAIN_ID_HEX=0x1645         # hex (lo que la wallet espera en wallet_switchEthereumChain)
-ZKSYS_EXPLORER_URL=https://explorer-test-zk.syscoin.org/
-ZKSYS_FAUCET_URL=https://faucet-test-zk.syscoin.org/
+# Syscoin Tanenbaum Testnet — zkSYS Testnet está DOWN (jun 2026), usamos Tanenbaum
+# Detalle del cambio en CLAUDE.md → "Configuración Syscoin / zkSYS"
+ZKSYS_RPC_URL=https://rpc.tanenbaum.io
+ZKSYS_CHAIN_ID=5700               # decimal (Tanenbaum)
+ZKSYS_CHAIN_ID_HEX=0x1644         # hex (lo que la wallet espera en wallet_switchEthereumChain)
+ZKSYS_EXPLORER_URL=https://tanenbaum.io
 ALIVIA_VAULT_PRIVATE_KEY=0x...
 ALIVIA_ACTA_CONTRACT=0x...        # se llena tras deploy
 

@@ -55,7 +55,7 @@ Demostrar en **≤ 5 minutos** que Alivia es una agente IA autónoma operativa q
 
 | Componente | Estado esperado | Cómo verificar |
 |---|---|---|
-| Bot Telegram `@AliviaBot` | Responde en ≤ 5s | `/start` desde otro teléfono |
+| Bot Telegram `@alivia_sbs_bot` | Responde en ≤ 5s | `/start` desde otro teléfono |
 | Bot Discord en servidor de demo | Responde a `/preguntar` | Comando en canal de prueba |
 | Backend Wasp + agente | `POST /healthz` → 200 | `curl https://alivia.sbs/healthz` |
 | Postgres con grafo sembrado | ≥ 30 nodos Persona, ≥ 5 Contrato | `SELECT count(*) FROM "Node"` |
@@ -88,7 +88,7 @@ Ejecutar 3 horas antes del demo. Si algo falla, hay margen para resolverlo.
 
 ```
 # 1. Bot Telegram
-   Enviar /start a @AliviaBot → respuesta esperada.
+   Enviar /start a @alivia_sbs_bot → respuesta esperada.
 
 # 2. Agente conversacional
    "Quiero reportar un caso de nepotismo" → Alivia entrevista.
@@ -151,7 +151,7 @@ Si **alguno** de 1-6 falla, se trabaja sobre eso. Si 7 falla, no bloquea el demo
 - **Resolución mínima**: 1080p.
 - **Audio**: micrófono externo si es posible. Sin eco.
 - **Pantallas a mostrar**:
-  - Pantalla 1: Telegram desktop con `@AliviaBot`.
+  - Pantalla 1: Telegram desktop con `@alivia_sbs_bot`.
   - Pantalla 2: navegador con `alivia.sbs/grafo`.
   - Pantalla 3 (opcional): bloque explorer de zkSYS para mostrar el mint.
 - **Captura**: OBS Studio o el screen share nativo del Discord.

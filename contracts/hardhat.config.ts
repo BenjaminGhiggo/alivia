@@ -10,9 +10,10 @@ dotenv.config({ path: "../app/.env.server" });
  */
 
 const PRIVATE_KEY = process.env.ALIVIA_VAULT_PRIVATE_KEY ?? "";
-const RPC_URL = process.env.ZKSYS_RPC_URL ?? "https://rpc-test-zk.syscoin.org/";
-const CHAIN_ID = parseInt(process.env.ZKSYS_CHAIN_ID ?? "5701", 10);
-const EXPLORER_URL = process.env.ZKSYS_EXPLORER_URL ?? "https://explorer-test-zk.syscoin.org/";
+// Defaults: Tanenbaum mientras zkSYS Testnet (5701) esté DOWN.
+const RPC_URL = process.env.ZKSYS_RPC_URL ?? "https://rpc.tanenbaum.io";
+const CHAIN_ID = parseInt(process.env.ZKSYS_CHAIN_ID ?? "5700", 10);
+const EXPLORER_URL = process.env.ZKSYS_EXPLORER_URL ?? "https://tanenbaum.io";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -25,18 +26,18 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 31337,
     },
-    zksysTestnet: {
+    tanenbaum: {
       url: RPC_URL,
       chainId: CHAIN_ID,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
   },
   etherscan: {
-    // El explorer de zkSYS Testnet no requiere API key real (placeholder OK)
-    apiKey: { zksysTestnet: "placeholder" },
+    // El explorer de Tanenbaum no requiere API key real (placeholder OK)
+    apiKey: { tanenbaum: "placeholder" },
     customChains: [
       {
-        network: "zksysTestnet",
+        network: "tanenbaum",
         chainId: CHAIN_ID,
         urls: {
           apiURL: `${EXPLORER_URL.replace(/\/$/, "")}/api`,

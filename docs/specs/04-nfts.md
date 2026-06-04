@@ -304,7 +304,7 @@ A llenar durante el despliegue. Mantener actualizado.
 
 | Contrato | Dirección zkSYS testnet | Verificado | Notas |
 |---|---|---|---|
-| `AliviaActa` | _por desplegar_ | – | Único contrato a desplegar en MVP |
+| `AliviaActa` | `0xce3528c75e4b7ae7c842d400c273b20eef4372a3` | Tanenbaum chainId 5700 | Deployed 2026-06-04, tx `0xb51c778c…` |
 | `AliviaAportante` | _post-MVP_ | – | – |
 | `AliviaBounty` | _post-MVP_ | – | – |
 | `AliviaLlave` | _post-MVP_ | – | – |

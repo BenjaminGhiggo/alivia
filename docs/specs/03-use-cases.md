@@ -26,7 +26,7 @@
 - **zkSYS testnet** (Syscoin).
 
 ### Precondiciones
-- El aportante tiene acceso al bot de Telegram `@AliviaBot` (o al canal de Discord).
+- El aportante tiene acceso al bot de Telegram `@alivia_sbs_bot` (o al canal de Discord).
 - El backend de Alivia está operativo y conectado al grafo y a Syscoin.
 
 ### Flujo principal

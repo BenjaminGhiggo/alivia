@@ -18,16 +18,18 @@ import { privateKeyToAccount } from "viem/accounts";
  * agente complete su flow sin colgarse en demos donde la chain no está lista.
  */
 
-const RPC_URL = process.env.ZKSYS_RPC_URL ?? "https://rpc-test-zk.syscoin.org/";
-const CHAIN_ID = parseInt(process.env.ZKSYS_CHAIN_ID ?? "5701", 10);
-const EXPLORER_URL = process.env.ZKSYS_EXPLORER_URL ?? "https://explorer-test-zk.syscoin.org/";
+// Defaults apuntan a Tanenbaum mientras zkSYS Testnet (5701) esté DOWN.
+// Sobreescribibles con env: ZKSYS_RPC_URL / ZKSYS_CHAIN_ID / ZKSYS_EXPLORER_URL.
+const RPC_URL = process.env.ZKSYS_RPC_URL ?? "https://rpc.tanenbaum.io";
+const CHAIN_ID = parseInt(process.env.ZKSYS_CHAIN_ID ?? "5700", 10);
+const EXPLORER_URL = process.env.ZKSYS_EXPLORER_URL ?? "https://tanenbaum.io";
 
 export const zkSysTestnet = defineChain({
   id: CHAIN_ID,
-  name: "zkSYS Testnet",
-  nativeCurrency: { name: "TSYS", symbol: "TSYS", decimals: 18 },
+  name: "Syscoin Tanenbaum Testnet",
+  nativeCurrency: { name: "tSYS", symbol: "tSYS", decimals: 18 },
   rpcUrls: { default: { http: [RPC_URL] } },
-  blockExplorers: { default: { name: "zkSYS Explorer", url: EXPLORER_URL } },
+  blockExplorers: { default: { name: "Tanenbaum Explorer", url: EXPLORER_URL } },
   testnet: true,
 });
 
