@@ -11,7 +11,7 @@ export default defineConfig({
     starlight({
       title: "ALIVIA Docs",
       customCss: ["./src/styles/tailwind.css"],
-      description: "Documentación de ALIVIA — plataforma de votación digital con Blockchain e IA.",
+      description: "Documentación de ALIVIA — agente IA anti-corrupción con grafo público en Syscoin.",
       logo: {
         src: "/src/assets/logo.webp",
         alt: "ALIVIA",
@@ -29,13 +29,19 @@ export default defineConfig({
           items: [
             { label: "¿Qué es ALIVIA?", link: "/" },
             { label: "Arquitectura", link: "/guides/architecture/" },
+            { label: "Whitepaper", link: "/whitepaper/" },
           ],
         },
         {
           label: "Guías",
           items: [
             { label: "Inicio rápido", link: "/guides/quickstart/" },
-            { label: "Configurar una votación", link: "/guides/setup-election/" },
+          ],
+        },
+        {
+          label: "Operaciones",
+          items: [
+            { label: "QA · Checklist de demo", link: "/qa-checklist/" },
           ],
         },
       ],
