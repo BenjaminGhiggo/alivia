@@ -1,4 +1,4 @@
-# ALIVIA · Presentación completa para NotebookLM
+# ALIVIA 
 
 > **Cómo usar este documento.** Sube este `presentacion.md` a NotebookLM como fuente. Opcionalmente sube también las imágenes de la carpeta `imagenes/` (NotebookLM admite imágenes en fuentes). Después en NotebookLM → **Studio → Video Overview** y pega el prompt que está al final de este archivo.
 >
