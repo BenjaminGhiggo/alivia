@@ -1,0 +1,22 @@
+# Service para inyectar en app/docker-compose.yml (que es gitignored, generado
+# por install-alivia.sh). En la próxima edición del install-script,
+# pegar este bloque junto a los otros services (docs_$N, client_$N, etc).
+#
+# Levantar con: cd app && docker-compose up -d --build bot_telegram_1
+# Logs: docker logs bot_telegram_alivia_sbs
+
+    bot_telegram_1:
+        build:
+            context: /opt/alivia.sbs/bots/telegram
+            dockerfile: Dockerfile
+        image: alivia-bot-telegram:latest
+        container_name: bot_telegram_alivia_sbs
+        environment:
+            ALIVIA_API_URL: http://server_1:3001   # red interna, no via proxy
+        env_file:
+            - .env.server          # TELEGRAM_BOT_TOKEN + ALIVIA_BOT_SHARED_SECRET
+        depends_on:
+            - server_1
+        networks:
+            - alivia-net-1
+        restart: always
