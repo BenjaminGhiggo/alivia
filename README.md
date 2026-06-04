@@ -2,7 +2,7 @@
 
 > **La corrupción solo se sostiene en el olvido. Alivia es lo contrario del olvido.**
 
-Plataforma de inteligencia ciudadana anti-corrupción para LatAm: agente IA autónomo que vive en WhatsApp/Discord, entrevista a ciudadanos, extrae entidades (personas, cargos, empresas, contratos, vínculos) y las consolida en un **grafo público consultable**, con casos anclados como NFT en Syscoin (zkSYS).
+Plataforma de inteligencia ciudadana anti-corrupción para LatAm: agente IA autónomo que vive en Telegram (canal principal) y Discord, entrevista a ciudadanos, extrae entidades (personas, cargos, empresas, contratos, vínculos) y las consolida en un **grafo público consultable**, con casos anclados como NFT en Syscoin (zkSYS).
 
 El alma del agente vive en [docs/SOUL.md](docs/SOUL.md). Su voz operativa en [docs/instinct.md](docs/instinct.md).
 
@@ -60,7 +60,7 @@ Gotchas de deploy y modelo de datos en [CLAUDE.md](CLAUDE.md). Reglas específic
 
 ## Convenciones
 
-- Branches: `main` (estable) · `dev01` (trabajo activo).
+- Branches: `main` (producción) ◀ `dev` (integración) ◀ `SB-N` (feature Kanban) ◀ `SB-N-vK` (iteraciones de bugfix). Detalle del flujo en [CLAUDE.md → Flujo Git](CLAUDE.md).
 - Cambios no triviales arrancan con una spec en [docs/specs/](docs/specs/) — ver sección Spec-Driven en [CLAUDE.md](CLAUDE.md).
 - Migrations Prisma en [app/migrations/](app/migrations/), commiteadas al repo.
 - Secretos en `.env.server` / `.env.client` (gitignored). Sólo se commitean `*.example`.
