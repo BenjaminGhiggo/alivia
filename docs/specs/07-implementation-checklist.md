@@ -71,16 +71,16 @@ Referencias: [01-agent-behavior](01-agent-behavior.md), [05-architecture §3.2�
 
 ---
 
-### F3 — Bots Telegram + Discord (T8–T12) [0/6]
+### F3 — Bots Telegram + Discord (T8–T12) [4/6 · 2 manuales pendientes]
 
 Referencia: [05-architecture §3.1](05-architecture.md).
 
-- [ ] **3.1** Crear `@AliviaBot` en BotFather (Telegram), guardar token en `.env` como `TELEGRAM_BOT_TOKEN`.
-- [ ] **3.2** `bots/telegram/index.ts` con `grammY` + adapter a `IncomingMessage` común.
-- [ ] **3.3** Crear app Discord en developer portal, invitar al server de demo. `.env` con `DISCORD_BOT_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`.
-- [ ] **3.4** `bots/discord/index.ts` con `discord.js` v14, slash command `/preguntar`.
-- [ ] **3.5** Cola in-memory secuencial por `chat_session_id` (un message a la vez por conversación).
-- [ ] **3.6** Endpoint `GET /healthz` verifica bots + DB + RPC zkSYS.
+- [ ] **3.1** (manual del equipo) Crear `@AliviaBot` en BotFather, copiar `TELEGRAM_BOT_TOKEN` a `.env.server`.
+- [x] **3.2** `bots/telegram/index.ts` con `grammy` + `tsx` runtime + tsconfig. Llama `POST /api/agent/turn` con `channel: "telegram"`. Comandos `/start` y `/help` + handler `message:text`.
+- [ ] **3.3** (manual del equipo) Crear app Discord, invitar al server, copiar `DISCORD_BOT_TOKEN/CLIENT_ID/GUILD_ID`. Luego correr `cd bots/discord && npm install && npm run register`.
+- [x] **3.4** `bots/discord/index.ts` con `discord.js` v14 + `register-commands.ts` para registrar `/preguntar`. Slash command + handler de DMs.
+- [x] **3.5** Cola in-memory por `chat_session_id` implementada en `app/src/server/api/agentTurn.ts` (`withLock` Map → Promise). Un turno por sesión a la vez. (Sustituye la cola externa por mutex server-side, más simple.)
+- [x] **3.6** `app/src/server/api/healthz.ts` (`GET /healthz`) devuelve status + flags de env (hasOpenAIKey, hasBotSharedSecret). El smoke completo (DB + RPC zkSYS) vive en `scripts/smoke.sh` (F7.1).
 
 **Demo gate:** `/start` en Telegram responde en ≤5s; `/preguntar X` en Discord devuelve dossier; aporte E2E desde Telegram crea `Case` en DB.
 
@@ -181,7 +181,7 @@ Ver [06-demo-acceptance §11](06-demo-acceptance.md). Cada uno toma uno o más r
 F0 — Setup + Voz                      [██████████] 4/4 ✅
 F1 — Schema + Migración + Seed        [██████████] 5/5 ✅
 F2 — Agente + Router + Tools          [██████████] 8/8 ✅
-F3 — Bots Telegram + Discord          [░░░░░░░░░░] 0/6
+F3 — Bots Telegram + Discord          [██████░░░░] 4/6 (2 creds manuales)
 F4 — Contrato + Mint                  [░░░░░░░░░░] 0/5
 F5 — Vista web                        [░░░░░░░░░░] 0/7
 F6 — Seed completo + Mockups          [░░░░░░░░░░] 0/4
