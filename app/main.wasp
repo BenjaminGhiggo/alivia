@@ -82,6 +82,8 @@ app OpenSaaS {
     seeds: [
       // Populates the database with a bunch of fake users to work with during development.
       import { seedMockUsers } from "@src/server/scripts/dbSeeds",
+      // Seed mínimo del grafo Alivia (~10 nodos para tests; full en F6).
+      import { seedGraph } from "@src/server/scripts/seedGraph",
     ]
   },
 
