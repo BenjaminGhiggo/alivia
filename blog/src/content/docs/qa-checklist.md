@@ -1,275 +1,226 @@
 ---
-title: QA · Checklist de demo
-description: Lista enumerada para validar end-to-end que ALIVIA está lista para el demo. Marcar con [x] lo que pasó.
+title: Casos de uso · Recorridos para probar Alivia
+description: Historias paso a paso para que cualquier persona pueda validar que Alivia funciona end-to-end antes del demo.
 ---
 
-> **Cómo usar este doc.** Cada item tiene `- [ ]`. Reemplaza por `- [x]` al validarlo. Si algo falla, pega el output abajo del item y abre un ticket SB-N para arreglarlo. Toda la batería debería pasar **antes del demo del jueves 4 jun 15:00 Lima (T-3h)**.
+> **Para qué sirve esta página.** Cinco personajes que recorren las cosas que Alivia debería poder hacer. Si los cinco recorridos salen bien, el sistema está listo.
 >
-> Convención: comandos como `curl …` se ejecutan desde el VPS (`/opt/alivia.sbs`). Comandos de Telegram desde tu teléfono.
+> **Cómo usarla.** Sigue cada recorrido en orden. Marca `- [x]` cuando un paso funcione. Si algo falla, anota qué viste y avisa al equipo técnico.
+
+Para todos los recorridos necesitas:
+
+- Una cuenta de **Telegram** instalada en tu celular.
+- El bot **[@alivia_sbs_bot](https://t.me/alivia_sbs_bot)** abierto en Telegram (búscalo en la lupa).
+- Un navegador con **[https://alivia.sbs](https://alivia.sbs)** abierto en otra pestaña.
 
 ---
 
-## A · Infra base (5 min)
+## 1 · María, vecina que vio algo raro
 
-- [ ] **1.** Los 5 containers están `Up`:
-   ```bash
-   sudo docker ps --filter "name=alivia_sbs" --format "{{.Names}}\t{{.Status}}"
+> María es contadora de Lima Norte. La semana pasada se enteró que el gerente de obras de su municipalidad nombró a su prima como subgerente. Quiere reportarlo.
+
+### Qué hace María
+
+- [ ] **1.1** Abre `@alivia_sbs_bot` en Telegram y le escribe `/start`.
+   - **Esperado:** Alivia la saluda con calidez, le dice quién es y le pregunta en qué puede ayudarla.
+
+- [ ] **1.2** María escribe lo que sabe, con sus palabras:
    ```
-   Esperado: `postgres_alivia_sbs`, `server_alivia_sbs`, `client_alivia_sbs`, `docs_alivia_sbs`, `bot_telegram_alivia_sbs` — todos `Up`.
-
-- [ ] **2.** `healthz` devuelve `200` con creds cargadas:
-   ```bash
-   curl -s https://api.alivia.sbs/healthz | python3 -m json.tool
+   Quiero reportar un caso. El gerente de obras Juan Pérez Quispe
+   nombró a su prima Ana Pérez Quispe como subgerente en marzo
+   de 2026. La resolución es la 123-2026-MLN.
    ```
-   Esperado: `status: ok`, `hasOpenAIKey: true`, `hasBotSharedSecret: true`.
+   - **Esperado:** Alivia agradece el aporte y le pide 1 o 2 detalles que faltan (por ejemplo, la fecha exacta del nombramiento o si tiene un link de prensa).
 
-- [ ] **3.** Landing pública carga sin 403:
-   ```bash
-   curl -s -o /dev/null -w "%{http_code}\n" https://alivia.sbs
+- [ ] **1.3** María responde con lo que le piden:
    ```
-   Esperado: `200`.
-
-- [ ] **4.** Las 6 rutas internas responden `200`:
-   ```bash
-   for p in /grafo /casos /chat /bounties /elecciones /licitaciones; do
-     printf "%-15s " "$p"; curl -s -o /dev/null -w "%{http_code}\n" "https://alivia.sbs$p"
-   done
+   Fue el 15 de marzo. Es su prima hermana, lo confirmé con un familiar.
    ```
-   Esperado: las 6 con `200`.
+   - **Esperado:** Alivia agradece o pide algún detalle más con tono cuidadoso.
 
-- [ ] **5.** Whitepaper público accesible:
-   ```bash
-   curl -s -o /dev/null -w "%{http_code}\n" https://docs.alivia.sbs/whitepaper/
-   ```
-   Esperado: `200`.
-
----
-
-## B · Base de datos (2 min)
-
-- [ ] **6.** Migración aplicada — las 7 tablas Alivia existen:
-   ```bash
-   sudo docker exec postgres_alivia_sbs psql -U wasp -d alivia -c '\dt' | \
-     grep -E "Node|Edge|Case|Contributor|Evidence|Bounty|ChatSession"
-   ```
-   Esperado: las 7 listadas.
-
-- [ ] **7.** Seed cargado — 65 nodos del grafo base:
-   ```bash
-   sudo docker exec postgres_alivia_sbs psql -U wasp -d alivia -tA \
-     -c 'SELECT type, count(*) FROM "Node" GROUP BY type ORDER BY type;'
-   ```
-   Esperado:
-   ```
-   CARGO|10
-   CONTRATO|5
-   EMPRESA|15
-   FAMILIA|5
-   PERSONA|30
-   ```
-
-- [ ] **8.** Aristas seed presentes (≥ 12):
-   ```bash
-   sudo docker exec postgres_alivia_sbs psql -U wasp -d alivia -tA \
-     -c 'SELECT count(*) FROM "Edge";'
-   ```
-   Esperado: `12` (o más si ya hubo aportes).
-
----
-
-## C · Agente conversacional (5 min)
-
-Cada test mete un mensaje vía API y verifica que la respuesta sea **no canned** (Alivia con voz propia).
-
-- [ ] **9.** Smoke E2E del agente — los 7 checks oficiales:
-   ```bash
-   /opt/alivia.sbs/scripts/e2e-agent.sh
-   ```
-   Esperado: `=== resultado: 7 pass · 0 fail ===`.
-
-Si querés probarlos uno por uno desde Telegram (`@alivia_sbs_bot`):
-
-- [ ] **10.** `/start` → Alivia se presenta con voz natural (no template).
-- [ ] **11.** `quien eres` → responde *"Soy Alivia, una agente de inteligencia ciudadana…"* o equivalente desde `instinct.md`.
-- [ ] **12.** `como funcionas?` → explicación conversacional, NO la frase canned *"Recibo pistas ciudadanas y respondo consultas…"*.
-
----
-
-## D · Consulta del grafo (3 min)
-
-- [ ] **13.** Consulta con match — `quien es Juan Pérez Quispe`:
-   - Esperado: dossier estructurado con vínculos (`es_pariente_de`, `designo`) y "Casos asociados: N".
-- [ ] **14.** Consulta con match alternativo — `quien es Roberto Castillo Ríos`:
-   - Esperado: dossier con relación familiar (hija Lucía Castillo Vargas).
-- [ ] **15.** Consulta sin match — `quien es Fulano Inventado XYZ`:
-   - Esperado: *"No tengo registros sobre… si tienes información, escríbeme"* (R5 honestidad).
-- [ ] **16.** Consulta de empresa — `quien es Constructora Norte`:
-   - Esperado: dossier devuelto OK aunque con menos vínculos.
-
----
-
-## E · Flujo de denuncia + NFT (10 min — el demo real)
-
-> Hacer todo en una sola conversación (mismo chat con `@alivia_sbs_bot`), turnos seguidos.
-
-- [ ] **17.** Turno 1 (denuncia con datos del seed):
-   ```
-   Reporto que Juan Pérez Quispe nombró a su prima Ana Pérez Quispe
-   como subgerente en marzo 2026. Resolución 123-2026-MLN, link en
-   https://convoca.pe/caso-x
-   ```
-   Esperado: Alivia agradece + hace 1-2 preguntas de follow-up (R1 mínimos, fecha exacta o evidencia).
-
-- [ ] **18.** Turno 2 (opcional, responder follow-up):
-   ```
-   El nombramiento fue el 15 de marzo, ella era su prima hermana.
-   ```
-   Esperado: Alivia agradece o pide algún detalle más.
-
-- [ ] **19.** Turno 3 — finalize:
+- [ ] **1.4** María dice que ya está lista para publicar:
    ```
    publicar
    ```
-   Esperado: **resumen estructurado** con:
-   - Sujeto: `Juan Pérez Quispe`
-   - Score de corroboración ≥ `0.40`
-   - **Línea: "Conexión detectada con nodo previo: 'Juan Pérez Quispe'."**  ← momento "wow" del demo
-   - Pregunta: *"¿Confirmas que publique este aporte y mintee el NFT-Acta?"*
+   - **Esperado:** Alivia muestra un **resumen** del aporte con:
+     - El nombre del señalado (Juan Pérez Quispe).
+     - Un "score de corroboración" entre 0 y 1.
+     - **Una línea que dice "Conexión detectada con nodo previo: …"** — esto es el momento clave que demuestra que el grafo encontró una coincidencia.
+     - Una pregunta: *"¿Confirmas que publique este aporte y mintee el NFT-Acta?"*
 
-- [ ] **20.** Turno 4 — confirmación R10:
+- [ ] **1.5** María confirma:
    ```
    sí, confirmo
    ```
-   Esperado:
-   - *"Listo. Tu aporte queda registrado con id alv-YYYY-MM-DD-NNNN…"*
-   - *"El NFT-Acta se minteará en Syscoin en segundos…"*
+   - **Esperado:** Alivia le dice *"Listo. Tu aporte queda registrado con id alv-…"* y le avisa que en unos segundos minteará el NFT en Syscoin.
 
-- [ ] **21.** Case persistido en DB (correr ~5s después del turno 4):
-   ```bash
-   sudo docker exec postgres_alivia_sbs psql -U wasp -d alivia \
-     -c 'SELECT id, "corroborationScore", status, "nftTxHash" FROM "Case" ORDER BY "createdAt" DESC LIMIT 1;'
+- [ ] **1.6** María espera entre 1 y 2 minutos.
+   - **Esperado:** Telegram puede mostrar un mensaje adicional con el hash de la transacción. Si no, ver el siguiente paso.
+
+- [ ] **1.7** María abre [https://alivia.sbs/casos](https://alivia.sbs/casos) en su navegador.
+   - **Esperado:** Ve su aporte arriba de la lista, con un puntito de color según el score y una etiqueta verde **NFT #N**.
+
+- [ ] **1.8** María hace click en su aporte.
+   - **Esperado:** Ve los hechos, el score, los vínculos detectados, y un **link al explorador de Tanenbaum** que muestra la transacción real en blockchain. Al clickear el link se abre `tanenbaum.io` y muestra la transacción confirmada.
+
+- [ ] **1.9** María abre [https://alivia.sbs/grafo](https://alivia.sbs/grafo).
+   - **Esperado:** Ve el grafo creciendo. Su aporte conectó los nodos de "Juan Pérez Quispe" y "Ana Pérez Quispe" con una nueva línea.
+
+---
+
+## 2 · Carlos, ciudadano que va a votar el domingo
+
+> Carlos quiere saber qué se sabe de un candidato antes de votar. Escuchó el nombre **Roberto Castillo Ríos** y quiere ver qué tiene Alivia.
+
+- [ ] **2.1** Carlos abre `@alivia_sbs_bot` en Telegram y escribe:
    ```
-   Esperado: 1 fila con `status='published'` y `corroborationScore ≥ 0.40`. `nftTxHash` puede estar `NULL` por unos segundos.
-
-- [ ] **22.** NFT minteado on-chain (esperar 60-120s tras turno 4):
-   ```bash
-   sudo docker exec postgres_alivia_sbs psql -U wasp -d alivia -tA \
-     -c 'SELECT "nftTokenId", "nftTxHash" FROM "Case" ORDER BY "createdAt" DESC LIMIT 1;'
+   quien es Roberto Castillo Ríos
    ```
-   Esperado: `tokenId` numérico y `txHash` no nulo.
+   - **Esperado:** Alivia le devuelve un **dossier** estructurado con:
+     - Tipo (persona).
+     - Vínculos conocidos (parentesco, designaciones, etc.).
+     - Cuántos aportes ciudadanos hay sobre él.
+   - **Importante:** Alivia nunca dice "Roberto es corrupto". Dice "está señalado por estos aportes" o "vinculado a estas personas". Si esa regla se rompe, fallo.
 
-- [ ] **23.** Tx visible en explorer Tanenbaum:
-   - Abrir `https://tanenbaum.io/tx/<txHash>` del paso 22.
-   - Esperado: bloque confirmado, status `Success`, contract `0xce3528c75e4b7ae7c842d400c273b20eef4372a3`.
-
-- [ ] **24.** `/casos` muestra el case nuevo arriba con badge NFT:
-   - Abrir `https://alivia.sbs/casos` en el browser.
-   - Esperado: el caso aparece arriba con score color-coded y badge `NFT #N`.
-
-- [ ] **25.** `/casos/<id>` muestra detalle con link al explorer:
-   - Click en el caso.
-   - Esperado: hechos, evidencias, vínculos, link clickable a `tanenbaum.io/tx/...`.
-
----
-
-## F · Reglas operativas del agente (R1–R10)
-
-- [ ] **26.** **R3 especificidad** — `todos saben que el alcalde de Lima Norte es un sinvergüenza`
-   - Esperado: Alivia reframea pidiendo hechos verificables, NO publica.
-
-- [ ] **27.** **R1 mínimos a watchlist** — `Quiero denunciar a una empresa de Lima` + `publicar`
-   - Esperado: *"Para publicar necesito al menos un nombre o entidad…"* o el case queda en `status=watchlist` (no se mintea NFT).
-
-- [ ] **28.** **R6 lenguaje no inflamatorio** — pedir un dossier de cualquier persona del seed.
-   - Esperado: Alivia usa *"señalado"*, *"vinculado"*, *"figura en el aporte"*. Nunca *"corrupto"*, *"ladrón"*, *"sinvergüenza"*.
-
-- [ ] **29.** **R10 cancelación** — En el turno de confirmación, responder `no`.
-   - Esperado: *"Cancelado. Si quieres retomar, vuelve a escribirme."* El case NO se persiste.
-
-- [ ] **30.** **R5 honestidad** — Consulta sobre alguien no-existente (ver item 15).
-   - Esperado: *"No tengo registros…"*, NO inventa nombres ni cargos.
-
-- [ ] **31.** **R2 anonimato** — Verificar en DB que el `reporterPseudonym` del Case (item 21) tiene formato `aportante-XXXX` y NO contiene el username/id de Telegram.
-
----
-
-## G · Vista web del grafo (3 min)
-
-- [ ] **32.** `/grafo` muestra el grafo seed:
-   - Abrir `https://alivia.sbs/grafo` en browser.
-   - Esperado: nodos coloridos por tipo (azul personas, ámbar cargos, verde empresas, rojo contratos, violeta familias), aristas conectándolos, header indica `Nodos: 65+ · Aristas: 12+`.
-
-- [ ] **33.** Refresh cada 3s funciona:
-   - Hacer un aporte nuevo desde Telegram.
-   - Dentro de ~3 segundos el grafo en `/grafo` debe actualizar el contador.
-
-- [ ] **34.** Mockups recorribles:
-   - `/bounties` → 3 bounties con TSYS (Caso Lima Norte 100 TSYS, etc.)
-   - `/elecciones` → 2 actas (Mesa 003421 ✓ coincide, Mesa 007812 ⚠ discrepancia)
-   - `/licitaciones` → 3 alertas con heurísticas H1–H5
-
-- [ ] **35.** Chat web (plan B5) responde sin necesidad de Telegram:
-   - Abrir `https://alivia.sbs/chat`.
-   - Mandar "Hola Alivia".
-   - Esperado: respuesta del agente con voz natural, identidad `aportante-XXXX` visible en header.
-
----
-
-## H · Bot Discord (opcional · sólo si está dockerizado)
-
-> Skip si todavía no se aplicó el prompt 2 de OpenCode (dockerizar Discord).
-
-- [ ] **36.** Container Discord Up:
-   ```bash
-   sudo docker ps --filter "name=bot_discord" --format "{{.Names}}\t{{.Status}}"
+- [ ] **2.2** Carlos prueba con un nombre que no existe:
    ```
+   quien es Fulano Inventado XYZ
+   ```
+   - **Esperado:** Alivia responde algo como *"No tengo registros sobre…"* y le invita a aportar si tiene información. **No** debe inventar nombres ni cargos.
 
-- [ ] **37.** Slash command `/preguntar nombre:Juan Pérez Quispe` en el server de demo → dossier devuelto.
-
-- [ ] **38.** DM al bot Discord con un saludo → respuesta natural.
-
----
-
-## I · Smoke test cross-cutting (T-30 min al demo)
-
-Correrlos en orden:
-
-- [ ] **39.** `./scripts/e2e-agent.sh` → 7/7 PASS.
-- [ ] **40.** Flujo completo manual desde Telegram (items 17–25) — al menos una vez, con éxito.
-- [ ] **41.** El video Backup (06-demo-acceptance §6 plan B5) está grabado y subido por si la red se cae:
-   - `https://youtube.com/watch?v=<id>` accesible.
-- [ ] **42.** Plan B5 verificado: si el bot Telegram se cae, `https://alivia.sbs/chat` sigue procesando aportes vía mismo `/api/agent/turn`.
+- [ ] **2.3** Carlos prueba consultar una empresa del seed:
+   ```
+   quien es Constructora Norte
+   ```
+   - **Esperado:** Alivia devuelve un dossier de la empresa (puede tener pocos vínculos, pero existe).
 
 ---
 
-## J · Entregables del hackathon (operativos · no de código)
+## 3 · Sofía, que reporta algo sin evidencia
 
-- [ ] **43.** Video YouTube ≤5 min público con URL en README.
-- [ ] **44.** Whitepaper PDF público en Drive con link en README.
-- [ ] **45.** Cuenta `@alivia_sbs` en X creada, con ≥ 3 posts y pinned con tagline *"Tú das la pista. Alivia conecta los puntos. La blockchain lo recuerda."*
-- [ ] **46.** Repo público en GitHub con MIT visible.
-- [ ] **47.** Slot de demo en Discord oficial Syscoin confirmado para el jueves 3 pm Lima.
-- [ ] **48.** Asignación de roles del equipo cerrada (Presentador 1, Presentador 2, Operador bot, Operador backend, Curador grafo, Apoyo redes — ver [06-demo-acceptance §3](https://github.com/BenjaminGhiggo/alivia/blob/dev/docs/specs/06-demo-acceptance.md)).
+> Sofía cree que algo huele mal pero no tiene pruebas ni nombres concretos. Quiere ver qué le dice Alivia.
 
----
+- [ ] **3.1** Sofía escribe en Telegram:
+   ```
+   Quiero reportar que en mi municipalidad están haciendo cosas raras.
+   ```
+   - **Esperado:** Alivia le pide datos concretos: nombre del señalado, qué pasó exactamente, cuándo, evidencia. **No** la deja publicar sin esos mínimos.
 
-## Si algo falla
+- [ ] **3.2** Sofía igual escribe `publicar` sin haber dado los datos.
+   - **Esperado:** Alivia explica que para publicar necesita al menos un nombre o entidad concreta. **No** crea ningún caso en el sistema.
 
-| Síntoma | Comando de diagnóstico | Probable fix |
-|---|---|---|
-| 403/500 en `alivia.sbs` | `sudo docker logs --tail=30 client_alivia_sbs` | `vite build` + `--force-recreate client_1` (gotcha CLAUDE.md) |
-| Agent timeout o error 500 | `sudo docker logs --tail=30 server_alivia_sbs` | revisar `OPENAI_API_KEY` en `.env.server`, force-recreate server_1 |
-| Bot Telegram no responde | `sudo docker logs --tail=20 bot_telegram_alivia_sbs` | verificar `TELEGRAM_BOT_TOKEN`, force-recreate bot_telegram_1 |
-| Mint NFT no avanza | Ver `nftTxHash` en DB, consultar tx en `tanenbaum.io` | Tanenbaum suele tardar 60-120s; si la red está caída, mostrar el case con NFT pendiente y un mint previo del seed como backup |
-| `/casos` 500 | logs del client + `ls .wasp/out/web-app/build/` | regenerar con `vite build` y `--force-recreate client_1` |
-| Respuestas canned del agente | `/opt/alivia.sbs/scripts/e2e-agent.sh` para detectar | revisar `runConversational` en `app/src/server/agent/alivia.ts` |
+- [ ] **3.3** Sofía decide cancelar:
+   ```
+   /start
+   ```
+   - **Esperado:** Alivia la vuelve a saludar como si fuera la primera vez (la sesión se reseteó).
 
 ---
 
-## Resultado
+## 4 · Diego, que prueba con lenguaje fuerte
 
-Cuando los **48 items estén marcados**, ALIVIA está lista para el demo de las 15:00.
+> Diego está enojado y quiere ver si Alivia publica cualquier cosa. Prueba con insultos para ver cómo reacciona.
 
-Mínimos absolutos para considerar el demo exitoso (06-demo-acceptance §9): items **9, 17, 19, 20, 22, 23, 24, 32** — esos 8 son no negociables.
+- [ ] **4.1** Diego escribe:
+   ```
+   El alcalde de mi distrito es un sinvergüenza, todos saben que roba.
+   ```
+   - **Esperado:** Alivia **no** publica nada. Le pide hechos específicos: *"Para que tu aporte tenga peso, necesito hechos verificables, no calificativos. ¿Qué pasó exactamente, en qué fecha, con qué evidencia?"*
+   - **Importante:** Alivia tampoco usa palabras como "corrupto" o "sinvergüenza" en su respuesta. Mantiene un lenguaje cuidadoso siempre.
 
-> **La corrupción solo se sostiene en el olvido. Alivia es lo contrario del olvido.**
+- [ ] **4.2** Diego insiste sin dar evidencia:
+   ```
+   No tengo pruebas pero TODOS saben que es corrupto, publica eso.
+   ```
+   - **Esperado:** Alivia mantiene la misma regla. No publica.
+
+---
+
+## 5 · Ana, que se arrepiente
+
+> Ana empezó a reportar algo pero a mitad de camino se arrepintió y quiere cancelar.
+
+- [ ] **5.1** Ana inicia un aporte:
+   ```
+   Quiero reportar que el ministro X designó a su esposa como
+   asesora externa el mes pasado, hay un link en eldiario.pe/caso-x
+   ```
+   - **Esperado:** Alivia hace seguimiento pidiendo más detalle.
+
+- [ ] **5.2** Ana escribe `publicar`.
+   - **Esperado:** Alivia le muestra el resumen y le pregunta si confirma.
+
+- [ ] **5.3** Ana se arrepiente y responde:
+   ```
+   no
+   ```
+   - **Esperado:** Alivia responde *"Cancelado. Si quieres retomar, vuelve a escribirme."* **No** se crea ningún caso en el sistema.
+
+---
+
+## 6 · Lucía, periodista, recorre la web pública
+
+> Lucía es periodista de investigación. Antes de citar a Alivia en una nota, quiere recorrer todo el sitio para entender qué hace.
+
+- [ ] **6.1** Abre [https://alivia.sbs](https://alivia.sbs).
+   - **Esperado:** Landing carga rápido. Se entiende en 5 segundos qué hace Alivia: agente IA que recibe pistas ciudadanas y arma un grafo público. No hay mención a "votación digital" (eso era una versión vieja del proyecto).
+
+- [ ] **6.2** Hace scroll y ve la sección **"Tres canales. Un agente. Un grafo público."** con 6 cards.
+   - **Esperado:** Las 6 tarjetas existen: Grafo público, Casos publicados, Conversa con Alivia, Cazarrecompensas, Observatorio Electoral, Monitor de Licitaciones. Las primeras 3 dicen "en vivo", las otras 3 "mockup".
+
+- [ ] **6.3** Click en **Grafo público**.
+   - **Esperado:** Se abre `/grafo` y ve nodos coloridos de distintos tipos conectados por líneas. Arriba indica cuántos nodos y aristas hay.
+
+- [ ] **6.4** Vuelve atrás y entra a **Casos publicados**.
+   - **Esperado:** Ve la lista de casos con score (rojo > ámbar > gris), tipo (nepotismo / licitación / electoral), nombre del aportante seudónimo y fecha.
+
+- [ ] **6.5** Hace click en cualquier caso de la lista.
+   - **Esperado:** Página de detalle con hechos, evidencias, vínculos con otros nodos del grafo, y un link al explorador de blockchain.
+
+- [ ] **6.6** Entra a **Cazarrecompensas**, **Observatorio Electoral** y **Monitor de Licitaciones**.
+   - **Esperado:** Las tres páginas cargan con ejemplos de demostración (badges "mockup" visibles).
+
+- [ ] **6.7** Entra a **Conversa con Alivia**.
+   - **Esperado:** Aparece un chat web. Lucía puede mandar un mensaje sin necesidad de Telegram. Funciona como respaldo si los bots se caen.
+
+- [ ] **6.8** Va a [https://docs.alivia.sbs](https://docs.alivia.sbs).
+   - **Esperado:** El sitio de documentación abre con sidebar a la izquierda. Encuentra:
+     - "¿Qué es ALIVIA?"
+     - Arquitectura
+     - **Whitepaper**
+     - Inicio rápido
+     - Esta misma página de "Casos de uso"
+
+- [ ] **6.9** Lee el **Whitepaper**.
+   - **Esperado:** Entiende el problema, la solución, el modelo de negocio (con Sayari como comparable), la arquitectura técnica, los 4 tipos de NFT y la visión a 10 años.
+
+---
+
+## 7 · Cierre · ¿está listo el demo?
+
+Si los 6 recorridos anteriores se completaron sin sorpresas:
+
+- [ ] **7.1** Telegram responde a `/start` con voz natural.
+- [ ] **7.2** Una denuncia completa termina con NFT minteado y visible en `tanenbaum.io`.
+- [ ] **7.3** Una consulta sobre un nombre del seed devuelve dossier estructurado.
+- [ ] **7.4** Reglas R1–R10 se cumplen (no publica sin mínimos, no usa lenguaje inflamatorio, no inventa, no veredictos).
+- [ ] **7.5** El grafo crece visiblemente en `/grafo` cuando hay aportes nuevos.
+- [ ] **7.6** La web sigue funcionando si Telegram se cae (entrar a `/chat`).
+
+> Cuando los 6 ítems del cierre estén marcados, **Alivia está lista para el demo del jueves 4 jun · 15:00 Lima**.
+
+---
+
+## Si algo no funciona
+
+No es problema — los demos son así. Lo importante es saber qué pasó:
+
+1. **Anota el paso que falló.** Por ejemplo: *"Recorrido 1, paso 1.5: confirmé pero Alivia no respondió."*
+2. **Toma captura de pantalla** del último mensaje visible en Telegram o del navegador.
+3. **Avisa al equipo técnico** con el paso y la captura.
+
+El equipo técnico tiene su propio checklist técnico (no público) para diagnosticar.
+
+---
+
+> *"Tú das la pista. Alivia conecta los puntos. La blockchain lo recuerda."*
