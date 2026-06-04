@@ -12,7 +12,7 @@
 **Dominio**: [alivia.sbs](https://alivia.sbs) · Docs: [docs.alivia.sbs](https://docs.alivia.sbs)
 **Bot Telegram**: [@alivia_sbs_bot](https://t.me/alivia_sbs_bot)
 **Blockchain**: Syscoin NEVM (Tanenbaum Testnet, chainId 5700)
-**Wallet de bóveda**: `0x7557c236c2F522f14b08ef3970A84a52669478d0`
+**Wallet de bóveda**: `0x755...d0`
 **Contrato NFT-Acta**: `Alivia Acta` (símbolo `ALV-ACTA`), verificado en el explorer
 **Stack**: Wasp + React + Node.js + PostgreSQL + Prisma + OpenAI `gpt-4o-mini` + viem + Pali Wallet
 **Licencia**: MIT
