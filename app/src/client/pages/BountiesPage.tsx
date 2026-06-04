@@ -1,62 +1,57 @@
+import { Link } from "react-router";
+import { useQuery } from "wasp/client/operations";
+import { getBounties } from "wasp/client/operations";
+
 /**
- * Mockup de Cazarrecompensas. Spec: 03-use-cases caso 3 + 04-nfts §5.
- * MVP: 3 bounties pre-cargados (AC3.2). Minteo real en testnet post-MVP.
+ * Lista de Bounties activos. Spec: 03-use-cases caso 3 + 04-nfts §5.
+ * Carga real desde DB. Si está vacío muestra CTA a /bounties/new.
  */
 
-interface BountyMock {
-  id: string;
-  targetName: string;
-  description: string;
-  amountTsys: number;
-  daysLeft: number;
-  postedBy: string;
-  status: "open" | "claimed";
-}
-
-const BOUNTIES: BountyMock[] = [
-  {
-    id: "BNT-2026-06-04-0001",
-    targetName: "Caso alv-2026-05-30-0042 (contrato municipal Lima Norte)",
-    description: "Copia del contrato firmado N° 123-2026 entre Municipalidad Lima Norte y Constructora Norte S.A.C.",
-    amountTsys: 100,
-    daysLeft: 22,
-    postedBy: "aportante-cc41",
-    status: "open",
-  },
-  {
-    id: "BNT-2026-06-02-0003",
-    targetName: "Pedro Quispe Huamán",
-    description: "Resolución oficial de designación como gerente, fecha y monto del cargo.",
-    amountTsys: 50,
-    daysLeft: 8,
-    postedBy: "aportante-d2f1",
-    status: "open",
-  },
-  {
-    id: "BNT-2026-05-28-0007",
-    targetName: "Suministros del Sur S.A.",
-    description: "Estados financieros 2023-2025 públicos.",
-    amountTsys: 75,
-    daysLeft: 0,
-    postedBy: "aportante-bb19",
-    status: "claimed",
-  },
-];
+const STATE_BADGE: Record<string, string> = {
+  open: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200",
+  claimed: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300",
+  cancelled: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200",
+  expired: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200",
+};
 
 export default function BountiesPage() {
+  const { data: bounties, isLoading, error } = useQuery(getBounties);
+
   return (
     <div className="mx-auto max-w-4xl p-8">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Cazarrecompensas</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          TSYS bloqueados como recompensa pública por evidencia específica. El primer aportante que
-          cumpla los criterios reclama. <span className="font-semibold">Mockup MVP</span> —
-          minteo on-chain post-hackathon.
-        </p>
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Cazarrecompensas</h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">
+            TSYS bloqueados en Syscoin como recompensa por evidencia específica.
+            El smart contract custodia hasta que Alivia valide el claim o expire.
+          </p>
+        </div>
+        <Link
+          to={"/bounties/new" as any}
+          className="rounded-lg bg-amber-600 px-4 py-2 text-white hover:bg-amber-700"
+        >
+          + Nuevo bounty
+        </Link>
       </header>
 
+      {error && <div className="rounded bg-red-50 p-4 text-red-700">Error: {String(error)}</div>}
+      {isLoading && <div className="text-slate-500">Cargando...</div>}
+
+      {bounties && bounties.length === 0 && (
+        <div className="rounded-lg border border-dashed border-slate-300 p-12 text-center dark:border-slate-700">
+          <p className="text-slate-500">Aún no hay bounties activos.</p>
+          <Link
+            to={"/bounties/new" as any}
+            className="mt-3 inline-block text-blue-600 underline dark:text-blue-400"
+          >
+            Sé el primero en publicar uno →
+          </Link>
+        </div>
+      )}
+
       <ul className="space-y-3">
-        {BOUNTIES.map((b) => (
+        {bounties?.map((b) => (
           <li
             key={b.id}
             className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
@@ -65,24 +60,20 @@ export default function BountiesPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-xs text-slate-500">{b.id}</span>
-                  {b.status === "open" ? (
-                    <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200">
-                      abierto
-                    </span>
-                  ) : (
-                    <span className="rounded bg-slate-200 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-700 dark:text-slate-300">
-                      reclamado
+                  <span className={`rounded px-2 py-0.5 text-xs ${STATE_BADGE[b.status] ?? ""}`}>
+                    {b.status}
+                  </span>
+                  {b.nftBountyTokenId && (
+                    <span className="rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                      NFT #{b.nftBountyTokenId}
                     </span>
                   )}
                 </div>
-                <h3 className="mt-2 font-semibold text-slate-900 dark:text-slate-100">
-                  {b.targetName}
-                </h3>
                 <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{b.description}</p>
-                <p className="mt-2 text-xs text-slate-500">
-                  Postor: {b.postedBy} ·{" "}
-                  {b.status === "open" ? `${b.daysLeft} días restantes` : "cerrado"}
+                <p className="mt-1 text-xs text-slate-500">
+                  Caso objetivo: <span className="font-mono">{b.targetNodeId}</span>
                 </p>
+                <p className="mt-1 text-xs text-slate-500">Postor: {b.postedBy}</p>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
@@ -94,11 +85,6 @@ export default function BountiesPage() {
           </li>
         ))}
       </ul>
-
-      <footer className="mt-8 rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500 dark:border-slate-700">
-        En producción, crear bounty requiere wallet conectada con TSYS suficientes. El contrato
-        bloquea los fondos hasta el claim o vencimiento (30 días por defecto).
-      </footer>
     </div>
   );
 }

@@ -260,6 +260,36 @@ query getCaseById {
   entities: [Case]
 }
 
+query getAportante {
+  fn: import { getAportante } from "@src/server/queries/grafoQueries",
+  entities: [Contributor, Case]
+}
+
+query getBounties {
+  fn: import { getBounties } from "@src/server/queries/grafoQueries",
+  entities: [Bounty]
+}
+
+action registerBounty {
+  fn: import { registerBounty } from "@src/server/actions/bountyActions",
+  entities: [Bounty]
+}
+
+action claimBounty {
+  fn: import { claimBounty } from "@src/server/actions/bountyActions",
+  entities: [Bounty]
+}
+
+action cancelBounty {
+  fn: import { cancelBounty } from "@src/server/actions/bountyActions",
+  entities: [Bounty]
+}
+
+action issueLlave {
+  fn: import { issueLlave } from "@src/server/actions/llaveActions",
+  entities: [User]
+}
+
 // =============================================================================
 // ALIVIA — Routes públicas del grafo
 // =============================================================================
@@ -284,9 +314,25 @@ page ChatPage {
   component: import ChatPage from "@src/client/pages/ChatPage"
 }
 
+route AportanteRoute { path: "/aportantes/:pseudonym", to: AportantePage }
+page AportantePage {
+  component: import AportantePage from "@src/client/pages/AportantePage"
+}
+
 route BountiesRoute { path: "/bounties", to: BountiesPage }
 page BountiesPage {
   component: import BountiesPage from "@src/client/pages/BountiesPage"
+}
+
+route BountyNewRoute { path: "/bounties/new", to: BountyNewPage }
+page BountyNewPage {
+  component: import BountyNewPage from "@src/client/pages/BountyNewPage"
+}
+
+route LlaveAdminRoute { path: "/admin/llaves", to: LlaveAdminPage }
+page LlaveAdminPage {
+  authRequired: true,
+  component: import LlaveAdminPage from "@src/client/pages/LlaveAdminPage"
 }
 
 route EleccionesRoute { path: "/elecciones", to: EleccionesPage }

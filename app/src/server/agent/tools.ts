@@ -6,6 +6,7 @@ import { findMatchingEntities, findNodesByLabel, getDossier } from "../graph/que
 import { createEdge, upsertNode } from "../graph/mutations";
 import { z } from "zod";
 import { AporteCase, nextCaseId } from "./_schema";
+import { computeAportanteLevel, getAportanteService } from "../chain/mintAportante";
 
 /**
  * 6 tools que el agente expone como function-calls. Spec: 05-architecture §3.3.
@@ -226,6 +227,12 @@ export async function persistCase(
     }
   }
 
+  // 7. Mint/update NFT-Aportante (fire-and-forget, sin bloquear la respuesta al
+  //    usuario; lo dispara una promise sin await).
+  triggerAportanteUpdateAsync(prisma, input.reporterPseudonym).catch((err) =>
+    console.error("[aportante] background error:", err),
+  );
+
   return AporteCase.parse({
     case_id: created.id,
     case_type: created.caseType,
@@ -240,4 +247,51 @@ export async function persistCase(
     evidence_hash: evidenceHash,
     nft_token_id: null,
   });
+}
+
+/**
+ * Garantiza que el aportante tenga su NFT-Aportante soulbound:
+ * - Si no lo tiene, lo mintea con level 0 (Testigo).
+ * - Si ya lo tiene, recalcula stats y level con los contadores frescos del
+ *   Contributor en DB.
+ *
+ * Custodia: el NFT se mintea a la vault wallet de Alivia (post-MVP: claim
+ * a wallet del aportante). El pseudónimo es el binding identifier.
+ */
+async function triggerAportanteUpdateAsync(
+  prisma: PrismaClient,
+  pseudonym: string,
+): Promise<void> {
+  const svc = getAportanteService();
+  const contributor = await prisma.contributor.findUnique({ where: { pseudonym } });
+  if (!contributor) return;
+
+  const level = computeAportanteLevel(
+    contributor.totalContributions,
+    contributor.totalCorroborated,
+  );
+  const tokenURI = `https://alivia.sbs/aportantes/${pseudonym}/metadata.json`;
+
+  // ensureMinted: si no existe, mint + asigna tokenId. Si ya existe, no-op.
+  const result = await svc.ensureMinted({ pseudonym, tokenURI });
+
+  // Si NO es nuevo, actualizamos stats en chain.
+  if (!result.isNew && result.tokenId !== "0") {
+    await svc.update({
+      tokenId: BigInt(result.tokenId),
+      level,
+      totalContributions: contributor.totalContributions,
+      totalCorroborated: contributor.totalCorroborated,
+      tokenURI,
+    });
+  }
+
+  // También guardamos el tokenId en DB para que la página /aportantes/:pseudonym
+  // pueda mostrarlo sin re-consultar el chain.
+  if (result.tokenId !== "0") {
+    await prisma.contributor.update({
+      where: { pseudonym },
+      data: { soulboundTokenId: result.tokenId },
+    });
+  }
 }
