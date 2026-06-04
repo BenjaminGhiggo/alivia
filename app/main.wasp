@@ -240,6 +240,49 @@ api healthz {
   fn: import { healthz } from "@src/server/api/healthz",
   httpRoute: (GET, "/healthz")
 }
+
+// =============================================================================
+// ALIVIA — Queries para la vista web del grafo (F5)
+// =============================================================================
+
+query getGraphData {
+  fn: import { getGraphData } from "@src/server/queries/grafoQueries",
+  entities: [Node, Edge]
+}
+
+query getRecentCases {
+  fn: import { getRecentCases } from "@src/server/queries/grafoQueries",
+  entities: [Case]
+}
+
+query getCaseById {
+  fn: import { getCaseById } from "@src/server/queries/grafoQueries",
+  entities: [Case]
+}
+
+// =============================================================================
+// ALIVIA — Routes públicas del grafo
+// =============================================================================
+
+route GrafoRoute { path: "/grafo", to: GrafoPage }
+page GrafoPage {
+  component: import GrafoPage from "@src/client/pages/GrafoPage"
+}
+
+route CasosRoute { path: "/casos", to: CasosPage }
+page CasosPage {
+  component: import CasosPage from "@src/client/pages/CasosPage"
+}
+
+route CasoRoute { path: "/casos/:id", to: CasoPage }
+page CasoPage {
+  component: import CasoPage from "@src/client/pages/CasoPage"
+}
+
+route ChatRoute { path: "/chat", to: ChatPage }
+page ChatPage {
+  component: import ChatPage from "@src/client/pages/ChatPage"
+}
 //#endregion
 
 //#region File Upload
