@@ -241,6 +241,23 @@ api healthz {
   httpRoute: (GET, "/healthz")
 }
 
+// Trazabilidad pública: cualquiera puede auditar.
+api caseStatus {
+  fn: import { caseStatus } from "@src/server/api/caseStatus",
+  entities: [Case],
+  httpRoute: (GET, "/api/case/:caseId/status")
+}
+
+api contracts {
+  fn: import { contracts } from "@src/server/api/contracts",
+  httpRoute: (GET, "/api/contracts")
+}
+
+api verifyTx {
+  fn: import { verifyTx } from "@src/server/api/verifyTx",
+  httpRoute: (GET, "/api/verify/:txHash")
+}
+
 // =============================================================================
 // ALIVIA — Queries para la vista web del grafo (F5)
 // =============================================================================
